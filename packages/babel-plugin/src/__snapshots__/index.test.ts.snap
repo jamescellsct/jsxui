@@ -2,266 +2,81 @@
 
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
-import React from 'react'
-import { Text, Spacer, Stack } from '@jsxui/react'
+import { Stack, Text } from 'system'
 
-import { Github, Logo, Shapes, Wave } from '../assets'
-
-export default function Index() {
+export default function App({ active }) {
   return (
-    <Stack height="minmax(100vh, auto)">
-      <div style={{ display: 'grid' }}>
-        <Stack style={{ gridArea: '1 / 1' }}>
-          <Shapes
-            visible={{ initial: false, 'breakpoints.large': true }}
-            width="100%"
-          />
-        </Stack>
-        <Stack
-          axis="x"
-          spaceX="minmax(16px, 1fr)"
-          style={{ gridArea: '1 / 1' }}
-        >
-          <Stack
-            width="minmax(auto, 960px)"
-            spaceX="1fr"
-            spaceYStart="16px"
-            spaceYEnd="minmax(16px, 1fr)"
-          >
-            <Stack
-              axis="x"
-              width="1fr"
-              spaceY="1fr"
-              spaceBefore={0}
-              spaceAfter={0}
-            >
-              <Logo width="auto" height="32px" />
-              <Spacer />
-              <Stack as="a" href="https://github.com/souporserious/jsxui">
-                <Github />
-              </Stack>
-            </Stack>
-            <Spacer size="80px" />
-            <Text
-              width="1fr"
-              size="xlarge"
-              weight="bold"
-              lineSpacing={24}
-              alignment="center"
-              spaceBefore={{
-                initial: 0,
-                screenMedium: 60,
-              }}
-              spaceAfter={{
-                initial: 0,
-                screenMedium: 60,
-              }}
-            >
-              Simple UI Primitives to Help Launch Your next&nbsp;Idea
-            </Text>
-            <Spacer
-              size={{
-                initial: '32px',
-                screenMedium: '48px',
-              }}
-            />
-          </Stack>
-        </Stack>
-      </div>
+    <Stack spaceBetween={2}>
+      <Text color={[[active, 'brand']]}>Heading</Text>
       <Stack
-        axis="x"
-        width="minmax(100%, 1440px)"
-        spaceX={{ 'breakpoints.large': '1fr' }}
-        spaceBetween={{ 'breakpoints.large': 'minmax(24px, 0.5fr)' }}
-        spaceYStart="40px"
-        spaceYEnd="80px"
-        // background={{ xray: 'url(#diagonalHatch)' }}
-        // TODO: add X/YWrap components
-        style={{ flexWrap: 'wrap' }}
+        axis={[['breakpoints.medium', 'x']]}
+        spaceBetween={[
+          ['default', 1],
+          ['breakpoints.medium', 2],
+        ]}
+        as="button"
+        onClick={() => alert('Hello World!')}
       >
-        {['Elements', 'Variants', 'Overrides', 'Editor'].map((name) => (
-          <Stack
-            key={name}
-            width={{
-              initial: '50%',
-              'breakpoints.large': '1fr',
-            }}
-            spaceX="1fr"
-            spaceBetween="24px"
-          >
-            <Text
-              size="large"
-              weight="medium"
-              alignment="center"
-              opacity={0.75}
-            >
-              {name}
-            </Text>
-            <Text>Coming Soon</Text>
-          </Stack>
-        ))}
+        <Text>Content</Text>
       </Stack>
-      <Wave width="1fr" height="auto" />
-      <Spacer size="minmax(80px, 1fr)" background="#7B5AD9" />
     </Stack>
   )
 }
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import React from 'react'
-import { Text, Spacer, Stack } from '@jsxui/react'
-import { Github, Logo, Shapes, Wave } from '../assets'
-export default function Index() {
+import { Stack, Text } from 'system'
+export default function App({ active }) {
   return (
     <div
-      height="minmax(100vh, auto)"
-      css={{
-        display: 'flex',
-      }}
-    >
-      <div
-        style={{
-          display: 'grid',
-        }}
-      >
-        <div
-          style={{
-            gridArea: '1 / 1',
-          }}
-          css={{
-            display: 'flex',
-          }}
-        >
-          <Shapes
-            visible={{
-              initial: false,
-              'breakpoints.large': true,
-            }}
-            width="100%"
-          />
-        </div>
-        <div
-          style={{
-            gridArea: '1 / 1',
-          }}
-          css={{
-            display: 'flex',
-            flexDirection: 'row',
-            paddingLeft: 'minmax(16px, 1fr)',
-            paddingRight: 'minmax(16px, 1fr)',
-          }}
-        >
-          <div
-            css={{
-              display: 'flex',
-              width: 'minmax(auto, 960px)',
-              paddingLeft: '1fr',
-              paddingRight: '1fr',
-              paddingTop: '16px',
-              paddingBottom: 'minmax(16px, 1fr)',
-            }}
-          >
-            <div
-              spaceBefore={0}
-              spaceAfter={0}
-              css={{
-                display: 'flex',
-                flexDirection: 'row',
-                flex: '1',
-                paddingTop: '1fr',
-                paddingBottom: '1fr',
-              }}
-            >
-              <Logo width="auto" height="32px" />
-              <Spacer />
-              <div
-                as="a"
-                href="https://github.com/souporserious/jsxui"
-                css={{
-                  display: 'flex',
-                }}
-              >
-                <Github />
-              </div>
-            </div>
-            <Spacer size="80px" />
-            <span
-              width="1fr"
-              lineSpacing={24}
-              spaceBefore={{
-                initial: 0,
-                screenMedium: 60,
-              }}
-              spaceAfter={{
-                initial: 0,
-                screenMedium: 60,
-              }}
-              css={{
-                fontSize: 32,
-                fontWeight: 500,
-                textAlign: 'center',
-              }}
-            >
-              Simple UI Primitives to Help Launch Your next&nbsp;Idea
-            </span>
-            <Spacer
-              size={{
-                initial: '32px',
-                screenMedium: '48px',
-              }}
-            />
-          </div>
-        </div>
-      </div>
-      <div // background={{ xray: 'url(#diagonalHatch)' }}
-        // TODO: add X/YWrap components
-        style={{
-          flexWrap: 'wrap',
-        }}
-        css={{
+      css={[
+        {
           display: 'flex',
-          flexDirection: 'row',
-          width: 'minmax(100%, 1440px)',
-          paddingTop: '40px',
-          paddingBottom: '80px',
-          '@media (min-width: 1200px)': {
-            paddingLeft: '1fr',
-            paddingRight: '1fr',
-            gap: 'minmax(24px, 0.5fr)',
+          flexDirection: 'column',
+          gap: 2,
+        },
+      ]}
+    >
+      <span
+        css={[
+          {
+            fontFamily: 'system-ui',
+            whiteSpace: 'pre-wrap',
+            margin: 0,
           },
-        }}
+          active && {
+            color: '#8D6CEE',
+          },
+        ]}
       >
-        {['Elements', 'Variants', 'Overrides', 'Editor'].map((name) => (
-          <div
-            key={name}
-            css={{
-              display: 'flex',
-              initial: '50%',
-              paddingLeft: '1fr',
-              paddingRight: '1fr',
-              gap: '24px',
-              '@media (min-width: 1200px)': {
-                flex: '1',
-              },
-            }}
-          >
-            <span
-              css={{
-                fontSize: 20,
-                fontWeight: 400,
-                textAlign: 'center',
-                opacity: 0.75,
-              }}
-            >
-              {name}
-            </span>
-            <span css={{}}>Coming Soon</span>
-          </div>
-        ))}
-      </div>
-      <Wave width="1fr" height="auto" />
-      <Spacer size="minmax(80px, 1fr)" background="#7B5AD9" />
+        Heading
+      </span>
+      <button
+        onClick={() => alert('Hello World!')}
+        css={[
+          {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            '@media screen and (min-width: 960px)': {
+              flexDirection: 'row',
+              gap: 2,
+            },
+          },
+        ]}
+      >
+        <span
+          css={[
+            {
+              fontFamily: 'system-ui',
+              whiteSpace: 'pre-wrap',
+              margin: 0,
+            },
+          ]}
+        >
+          Content
+        </span>
+      </button>
     </div>
   )
 }

@@ -1,16 +1,20 @@
-export default function App() {
+import { Stack, Text } from 'system'
+
+export default function App({ active }) {
   return (
-    <Stack
-      axis="x"
-      width="container.medium"
-      spaceX={{
-        initial: 16,
-        'breakpoints.large': 'xlarge',
-      }}
-      spaceY={40}
-      spaceYEnd="80px"
-    >
-      <Text>Hello World</Text>
+    <Stack spaceBetween={2}>
+      <Text color={[[active, 'brand']]}>Heading</Text>
+      <Stack
+        axis={[['breakpoints.medium', 'x']]}
+        spaceBetween={[
+          ['default', 1],
+          ['breakpoints.medium', 2],
+        ]}
+        as="button"
+        onClick={() => alert('Hello World!')}
+      >
+        <Text>Content</Text>
+      </Stack>
     </Stack>
   )
 }

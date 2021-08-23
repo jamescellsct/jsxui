@@ -5,7 +5,7 @@ build({
   entryPoints: [
     'src/index.ts',
     'src/compiler.ts',
-    'src/config.ts',
+    'src/create-component.ts',
     'src/fetch-images.ts',
   ],
   outdir: 'dist',

@@ -9,7 +9,7 @@ export default function Index() {
       <div style={{ display: 'grid' }}>
         <Stack style={{ gridArea: '1 / 1' }}>
           <Shapes
-            visible={{ initial: false, 'breakpoints.large': true }}
+            visible={{ default: false, 'breakpoints.large': true }}
             width="100%"
           />
         </Stack>
@@ -45,20 +45,20 @@ export default function Index() {
               lineSpacing={24}
               alignment="center"
               spaceBefore={{
-                initial: 0,
-                screenMedium: 60,
+                default: 0,
+                'breakpoints.medium': 60,
               }}
               spaceAfter={{
-                initial: 0,
-                screenMedium: 60,
+                default: 0,
+                'breakpoints.medium': 60,
               }}
             >
               Simple UI Primitives to Help Launch Your next&nbsp;Idea
             </Text>
             <Spacer
               size={{
-                initial: '32px',
-                screenMedium: '48px',
+                default: '32px',
+                'breakpoints.medium': '48px',
               }}
             />
           </Stack>
@@ -79,7 +79,7 @@ export default function Index() {
           <Stack
             key={name}
             width={{
-              initial: '50%',
+              default: '50%',
               'breakpoints.large': '1fr',
             }}
             spaceX="1fr"

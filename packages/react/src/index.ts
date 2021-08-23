@@ -1,3 +1,5 @@
+import React from 'react'
+
 export * from './Circle'
 export * from './DevTools'
 export * from './Divider'
