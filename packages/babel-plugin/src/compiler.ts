@@ -189,10 +189,10 @@ export default function (_, state): PluginObj<PluginOptions> {
             path.node.closingElement.name.name = component.as
           }
 
-          const attributes: Array<t.JSXAttribute> = []
-          const defaultEntries: Array<[string, any]> = []
+          let defaultEntries: Array<[string, any]> = []
           const variantEntries: Array<[any, any]> = []
           const breakpointEntries: Array<[string, any]> = []
+          const attributes: Array<t.JSXAttribute> = []
 
           const pushKeyValueProp = (key, value) => {
             const transform = component.transforms[key]
@@ -373,16 +373,19 @@ export default function (_, state): PluginObj<PluginOptions> {
             }
           })
 
+          // Remove duplicates
+          defaultEntries = defaultEntries.filter((entry, index) => {
+            let duplicateIndex = -1
+            defaultEntries.forEach((possibleDuplicateEntry, index) => {
+              if (possibleDuplicateEntry[0] === entry[0]) {
+                duplicateIndex = index
+              }
+            })
+            return duplicateIndex > -1 ? duplicateIndex === index : true
+          })
+
           componentEntries[id.name] = {
-            defaultEntries: defaultEntries.filter((entry, index) => {
-              let duplicateIndex = -1
-              defaultEntries.forEach((possibleDuplicateEntry, index) => {
-                if (possibleDuplicateEntry[0] === entry[0]) {
-                  duplicateIndex = index
-                }
-              })
-              return duplicateIndex > -1 ? duplicateIndex === index : true
-            }),
+            defaultEntries,
             breakpointEntries,
             variantEntries,
           }
