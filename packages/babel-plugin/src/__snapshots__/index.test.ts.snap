@@ -2,19 +2,26 @@
 
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
-import { Stack, Text } from 'system'
+import { Spacer, Stack, Text } from 'system'
 
 export default function App({ active }) {
   return (
     <Stack spaceBetween={2}>
       <Text color={[[active, 'brand']]}>Heading</Text>
+      <Spacer
+        size={[
+          ['default', '4px'],
+          ['breakpoints.medium', '16px'],
+          ['breakpoints.large', '32px'],
+        ]}
+      />
       <Stack
+        as="button"
         axis={[['breakpoints.medium', 'x']]}
         spaceBetween={[
           ['default', 1],
           ['breakpoints.medium', 2],
         ]}
-        as="button"
         onClick={() => alert('Hello World!')}
       >
         <Text>Content</Text>
@@ -25,17 +32,17 @@ export default function App({ active }) {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import { Stack, Text } from 'system'
+import { Spacer, Stack, Text } from 'system'
 export default function App({ active }) {
   return (
     <div
-      css={[
-        {
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 2,
-        },
-      ]}
+      css={{
+        display: 'flex',
+        flexDirection: 'column',
+        minWidth: 0,
+        minHeight: 0,
+        gap: 2,
+      }}
     >
       <span
         css={[
@@ -51,28 +58,38 @@ export default function App({ active }) {
       >
         Heading
       </span>
+      <div
+        css={{
+          flex: '1 1 auto',
+          flex: '0 0 4px',
+          '@media screen and (min-width: 960px)': {
+            flex: '0 0 16px',
+          },
+          '@media screen and (min-width: 1200px)': {
+            flex: '0 0 32px',
+          },
+        }}
+      />
       <button
         onClick={() => alert('Hello World!')}
-        css={[
-          {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 1,
-            '@media screen and (min-width: 960px)': {
-              flexDirection: 'row',
-              gap: 2,
-            },
+        css={{
+          display: 'flex',
+          flexDirection: 'column',
+          minWidth: 0,
+          minHeight: 0,
+          gap: 1,
+          '@media screen and (min-width: 960px)': {
+            flexDirection: 'row',
+            gap: 2,
           },
-        ]}
+        }}
       >
         <span
-          css={[
-            {
-              fontFamily: 'system-ui',
-              whiteSpace: 'pre-wrap',
-              margin: 0,
-            },
-          ]}
+          css={{
+            fontFamily: 'system-ui',
+            whiteSpace: 'pre-wrap',
+            margin: 0,
+          }}
         >
           Content
         </span>

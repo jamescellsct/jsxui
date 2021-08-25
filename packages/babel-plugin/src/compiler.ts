@@ -52,7 +52,7 @@ function getValueType(
 }
 
 function getValue(node) {
-  return node.type === 'NumericLiteral' ? node.value : node.value
+  return node.type === 'NumericLiteral' ? node.value : node.value || node
 }
 
 export default function (_, state): PluginObj<PluginOptions> {
@@ -72,7 +72,7 @@ export default function (_, state): PluginObj<PluginOptions> {
         ...componentConfig,
       }
     })
-  let styleAttributes, styleProperties
+  let componentEntries
   return {
     name: '@jsxui/babel-plugin',
     inherits: jsx,
@@ -83,8 +83,7 @@ export default function (_, state): PluginObj<PluginOptions> {
       // https://jamie.build/babel-plugin-ordering.html
       Program: {
         enter() {
-          styleAttributes = {}
-          styleProperties = {}
+          componentEntries = {}
         },
         exit(path) {
           const importDeclarations = {}
@@ -160,7 +159,7 @@ export default function (_, state): PluginObj<PluginOptions> {
           }
 
           if (visitor.Program) {
-            const state = { styleAttributes, styleProperties }
+            const state = { componentEntries }
             if (visitor.Program) {
               visitor.Program.call(state, path, state)
             }
@@ -191,28 +190,32 @@ export default function (_, state): PluginObj<PluginOptions> {
           }
 
           const attributes: Array<t.JSXAttribute> = []
-          const defaultProperties: Array<t.ObjectProperty> = []
-          const localStyleAttributes: Array<t.JSXAttribute> = []
-          const localStyleProperties: Array<t.ObjectProperty> = []
-          const variantStyleProperties: Array<[any, t.ObjectProperty]> = []
-          const breakpointProperties = {}
+          const defaultEntries: Array<[string, any]> = []
+          const variantEntries: Array<[any, any]> = []
+          const breakpointEntries: Array<[string, any]> = []
+
+          const pushKeyValueProp = (key, value) => {
+            const transform = component.transforms[key]
+            if (transform !== undefined) {
+              const transformedValue = transform(value, theme)
+              if (typeof transformedValue === 'object') {
+                Object.entries(transformedValue).forEach(([key, value]) => {
+                  defaultEntries.push([key, getValueType(value)])
+                })
+              } else {
+                defaultEntries.push([key, getValueType(transformedValue)])
+              }
+            } else {
+              defaultEntries.push([key, getValueType(value)])
+            }
+          }
 
           // TODO: defaults should work exactly like values and allow specifying
           // media queries, this can work nice for components like Stack that can
           // automatically default to y axis at smaller widths
           if (component.defaults) {
             Object.entries(component.defaults).forEach(([key, value]) => {
-              localStyleAttributes.push(
-                t.jsxAttribute(
-                  t.jsxIdentifier(key),
-                  t.jsxExpressionContainer(getValueType(value))
-                )
-              )
-            })
-            Object.entries(component.defaults).forEach(([key, value]) => {
-              defaultProperties.push(
-                t.objectProperty(t.identifier(key), getValueType(value))
-              )
+              pushKeyValueProp(key, value)
             })
           }
 
@@ -234,6 +237,8 @@ export default function (_, state): PluginObj<PluginOptions> {
               // web for instance will use display: none, but native should return null?
             }
 
+            // TODO: we need to be able to swap out elements with variants. This
+            // will be pretty involved since we need to add a variable/hooks to swap them out
             if (attribute.name.name === 'as') {
               path.node.openingElement.name.name = attribute.value.value
               if (path.node.closingElement) {
@@ -241,6 +246,7 @@ export default function (_, state): PluginObj<PluginOptions> {
               }
             }
 
+            // <Text variant="heading1" />
             if (attribute.name.name === 'variant') {
               const variant = component.variants[attribute.value.value]
               const platformVariant = variant[platform]
@@ -252,36 +258,7 @@ export default function (_, state): PluginObj<PluginOptions> {
               }
 
               Object.entries(variant.defaults).forEach(([key, value]) => {
-                const transform = component.transforms[key]
-                if (transform !== undefined) {
-                  const transformedValue = transform(value, theme)
-                  if (typeof transformedValue === 'object') {
-                    Object.entries(transformedValue).forEach(([key, value]) => {
-                      localStyleAttributes.push(
-                        t.jsxAttribute(
-                          t.jsxIdentifier(key),
-                          t.jsxExpressionContainer(getValueType(value))
-                        )
-                      )
-                      localStyleProperties.push(
-                        t.objectProperty(t.identifier(key), getValueType(value))
-                      )
-                    })
-                  } else {
-                    localStyleAttributes.push(
-                      t.jsxAttribute(
-                        t.jsxIdentifier(key),
-                        t.jsxExpressionContainer(getValueType(transformedValue))
-                      )
-                    )
-                    localStyleProperties.push(
-                      t.objectProperty(
-                        t.identifier(key),
-                        getValueType(transformedValue)
-                      )
-                    )
-                  }
-                }
+                pushKeyValueProp(key, value)
               })
             }
 
@@ -303,29 +280,29 @@ export default function (_, state): PluginObj<PluginOptions> {
                       variant.type === 'StringLiteral' && variant.value
                     if (variantName && variantName.includes('breakpoints')) {
                       const breakpoint = get(theme, variantName)
-                      const transformedValue = transform(getValue(value), theme)
-
-                      if (breakpointProperties[breakpoint] === undefined) {
-                        breakpointProperties[breakpoint] = []
+                      const addBreakpointEntry = (key, value) => {
+                        const breakpointEntry = breakpointEntries.find(
+                          ([key]) => key === breakpoint
+                        )
+                        const propEntry = [key, getValueType(value)]
+                        if (breakpointEntry) {
+                          breakpointEntry[1].push(propEntry)
+                        } else {
+                          breakpointEntries.push([breakpoint, [propEntry]])
+                        }
                       }
+                      const transformedValue = transform(getValue(value), theme)
 
                       if (typeof transformedValue === 'object') {
                         Object.entries(transformedValue).forEach(
                           ([key, value]) => {
-                            breakpointProperties[breakpoint].push(
-                              t.objectProperty(
-                                t.identifier(key),
-                                getValueType(value)
-                              )
-                            )
+                            addBreakpointEntry(key, value)
                           }
                         )
                       } else {
-                        breakpointProperties[breakpoint].push(
-                          t.objectProperty(
-                            t.identifier(attribute.name.name),
-                            getValueType(transformedValue)
-                          )
+                        addBreakpointEntry(
+                          attribute.name.name,
+                          transformedValue
                         )
                       }
                     } else if (variantName === 'default') {
@@ -333,158 +310,45 @@ export default function (_, state): PluginObj<PluginOptions> {
                       if (typeof transformedValue === 'object') {
                         Object.entries(transformedValue).forEach(
                           ([key, value]) => {
-                            localStyleAttributes.push(
-                              t.jsxAttribute(
-                                t.jsxIdentifier(key),
-                                t.jsxExpressionContainer(getValueType(value))
-                              )
-                            )
-                            localStyleProperties.push(
-                              t.objectProperty(
-                                t.identifier(key),
-                                getValueType(value)
-                              )
-                            )
+                            defaultEntries.push([key, getValueType(value)])
                           }
                         )
                       } else {
-                        localStyleAttributes.push(
-                          t.jsxAttribute(
-                            t.jsxIdentifier(attribute.name.name),
-                            t.jsxExpressionContainer(
-                              getValueType(transformedValue)
-                            )
-                          )
-                        )
-                        localStyleProperties.push(
-                          t.objectProperty(
-                            t.identifier(attribute.name.name),
-                            getValueType(transformedValue)
-                          )
-                        )
+                        defaultEntries.push([
+                          attribute.name.name,
+                          getValueType(transformedValue),
+                        ])
                       }
                     } else if (typeof transformedValue === 'object') {
-                      variantStyleProperties.push([
+                      variantEntries.push([
                         variant,
-                        Object.entries(transformedValue).map(([key, value]) =>
-                          t.objectProperty(
-                            t.identifier(key),
-                            getValueType(value)
-                          )
-                        ),
+                        Object.entries(transformedValue).map(([key, value]) => [
+                          key,
+                          getValueType(value),
+                        ]),
                       ])
                     } else {
-                      variantStyleProperties.push([
+                      variantEntries.push([
                         variant,
-                        [
-                          t.objectProperty(
-                            t.identifier(attribute.name.name),
-                            getValueType(transformedValue)
-                          ),
-                        ],
+                        [[attribute.name.name, getValueType(transformedValue)]],
                       ])
-                    }
-                  })
-                } else if (expression.type === 'ObjectExpression') {
-                  expression.properties.forEach((property) => {
-                    if (property.key.name === 'default') {
-                      const transformedValue = transform(
-                        property.value.value,
-                        theme
-                      )
-                      if (typeof transformedValue === 'object') {
-                        Object.entries(transformedValue).forEach(
-                          ([key, value]) => {
-                            localStyleAttributes.push(
-                              t.jsxAttribute(
-                                t.jsxIdentifier(key),
-                                t.jsxExpressionContainer(getValueType(value))
-                              )
-                            )
-                            localStyleProperties.push(
-                              t.objectProperty(
-                                t.identifier(key),
-                                getValueType(value)
-                              )
-                            )
-                          }
-                        )
-                      } else {
-                        localStyleAttributes.push(
-                          t.jsxAttribute(
-                            t.jsxIdentifier(attribute.name.name),
-                            t.jsxExpressionContainer(
-                              getValueType(transformedValue)
-                            )
-                          )
-                        )
-                        localStyleProperties.push(
-                          t.objectProperty(
-                            t.identifier(attribute.name.name),
-                            getValueType(transformedValue)
-                          )
-                        )
-                      }
-                    } else {
-                      const breakpoint = get(theme, property.key.value)
-                      const transformedValue = transform(
-                        property.value.value,
-                        theme
-                      )
-
-                      if (breakpointProperties[breakpoint] === undefined) {
-                        breakpointProperties[breakpoint] = []
-                      }
-
-                      if (typeof transformedValue === 'object') {
-                        Object.entries(transformedValue).forEach(
-                          ([key, value]) => {
-                            breakpointProperties[breakpoint].push(
-                              t.objectProperty(
-                                t.identifier(key),
-                                getValueType(value)
-                              )
-                            )
-                          }
-                        )
-                      } else {
-                        breakpointProperties[breakpoint].push(
-                          t.objectProperty(
-                            t.identifier(attribute.name.name),
-                            getValueType(transformedValue)
-                          )
-                        )
-                      }
                     }
                   })
                 } else {
                   // <Stack axis={'x'} />
-                  const transformedValue = transform(expression.value, theme)
+                  const transformedValue = transform(
+                    getValue(expression.value),
+                    theme
+                  )
                   if (typeof transformedValue === 'object') {
                     Object.entries(transformedValue).forEach(([key, value]) => {
-                      // localStyleAttributes.push(
-                      //   t.jsxAttribute(
-                      //     t.jsxIdentifier(key),
-                      //     t.jsxExpressionContainer(getValueType(value))
-                      //   )
-                      // )
-                      localStyleProperties.push(
-                        t.objectProperty(t.identifier(key), getValueType(value))
-                      )
+                      defaultEntries.push([key, getValueType(value)])
                     })
                   } else {
-                    // localStyleAttributes.push(
-                    //   t.jsxAttribute(
-                    //     t.jsxIdentifier(attribute.name.name),
-                    //     t.jsxExpressionContainer(getValueType(transformedValue))
-                    //   )
-                    // )
-                    localStyleProperties.push(
-                      t.objectProperty(
-                        t.identifier(attribute.name.name),
-                        getValueType(transformedValue)
-                      )
-                    )
+                    defaultEntries.push([
+                      attribute.name.name,
+                      getValueType(transformedValue),
+                    ])
                   }
                 }
               } else {
@@ -495,29 +359,13 @@ export default function (_, state): PluginObj<PluginOptions> {
                 // primitive values like string/number?
                 if (typeof transformedValue === 'object') {
                   Object.entries(transformedValue).forEach(([key, value]) => {
-                    localStyleAttributes.push(
-                      t.jsxAttribute(
-                        t.jsxIdentifier(key),
-                        t.jsxExpressionContainer(getValueType(value))
-                      )
-                    )
-                    localStyleProperties.push(
-                      t.objectProperty(t.identifier(key), getValueType(value))
-                    )
+                    defaultEntries.push([key, getValueType(value)])
                   })
                 } else {
-                  localStyleAttributes.push(
-                    t.jsxAttribute(
-                      t.jsxIdentifier(attribute.name.name),
-                      t.jsxExpressionContainer(getValueType(transformedValue))
-                    )
-                  )
-                  localStyleProperties.push(
-                    t.objectProperty(
-                      t.identifier(attribute.name.name),
-                      getValueType(transformedValue)
-                    )
-                  )
+                  defaultEntries.push([
+                    attribute.name.name,
+                    getValueType(transformedValue),
+                  ])
                 }
               }
             } else {
@@ -525,58 +373,31 @@ export default function (_, state): PluginObj<PluginOptions> {
             }
           })
 
-          if (localStyleAttributes.length > 0) {
-            styleAttributes[id.name] = localStyleAttributes.filter(
-              (attribute, index) => {
-                const sameAttributes = localStyleAttributes.filter(
-                  ({ name }) => name.name === attribute.name.name
-                )
-                return sameAttributes.length > 1
-                  ? sameAttributes.length === index
-                  : true
-              }
-            )
+          componentEntries[id.name] = {
+            defaultEntries: defaultEntries.filter((entry, index) => {
+              let duplicateIndex = -1
+              defaultEntries.forEach((possibleDuplicateEntry, index) => {
+                if (possibleDuplicateEntry[0] === entry[0]) {
+                  duplicateIndex = index
+                }
+              })
+              return duplicateIndex > -1 ? duplicateIndex === index : true
+            }),
+            breakpointEntries,
+            variantEntries,
           }
 
-          if (localStyleProperties.length > 0) {
-            styleProperties[id.name] = [
-              ...defaultProperties,
-              ...localStyleProperties.filter((property, index) => {
-                // if same value is present we take the last one since it will
-                // be overwritten anyways
-                const sameProperties = localStyleProperties.filter(
-                  ({ key }) => key.name === property.key.name
-                )
-                return sameProperties.length > 1
-                  ? sameProperties.length === index
-                  : true
-              }),
-              ...Object.entries(breakpointProperties).reduce(
-                (previousValue, [key, properties]) => [
-                  ...previousValue,
-                  t.objectProperty(
-                    t.stringLiteral(key),
-                    t.objectExpression(properties)
-                  ),
-                ],
-                []
-              ),
-            ]
-          } else {
-            styleProperties[id.name] = defaultProperties
-          }
-
+          const propsToRemove = ['as', 'variant']
           path.node.openingElement.attributes = attributes.filter(
-            (attribute) =>
-              attribute.name.name !== 'as' && attribute.name.name !== 'variant'
+            (attribute) => !propsToRemove.includes(attribute.name.name)
           )
 
           if (visitor.JSXElement) {
             const state = {
               id: id.name,
-              styleAttributes: styleAttributes[id.name],
-              styleProperties: styleProperties[id.name],
-              variantStyleProperties,
+              defaultEntries,
+              breakpointEntries,
+              variantEntries,
             }
             if (visitor.JSXElement) {
               visitor.JSXElement.call(state, path, state)
