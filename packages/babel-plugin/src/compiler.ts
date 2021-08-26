@@ -253,9 +253,21 @@ export default function (_, state): PluginObj<PluginOptions> {
             // TODO: we need to be able to swap out elements with variants. This
             // will be pretty involved since we need to add a variable/hooks to swap them out
             if (attribute.name.name === 'as') {
-              path.node.openingElement.name.name = attribute.value.value
-              if (path.node.closingElement) {
-                path.node.closingElement.name.name = attribute.value.value
+              if (attribute.value.type === 'JSXExpressionContainer') {
+                const { object, property } = attribute.value.expression
+                const expression = t.jsxMemberExpression(
+                  t.jsxIdentifier(object.name),
+                  t.jsxIdentifier(property.name)
+                )
+                path.node.openingElement.name = expression
+                if (path.node.closingElement) {
+                  path.node.closingElement.name = expression
+                }
+              } else {
+                path.node.openingElement.name.name = attribute.value.value
+                if (path.node.closingElement) {
+                  path.node.closingElement.name.name = attribute.value.value
+                }
               }
             }
 
@@ -349,11 +361,17 @@ export default function (_, state): PluginObj<PluginOptions> {
                   })
                 } else {
                   // <Stack axis={'x'} />
-                  const transformedValue = transform(
-                    getValue(expression.value),
-                    theme
-                  )
-                  if (typeof transformedValue === 'object') {
+                  // TODO: Can we use component transforms at runtime when we can't
+                  // statically transform? <div css={{ width: Stack.transform(width) }} />
+                  // TODO: use path.get('value').get('expression').evaluate() where applicable
+                  const transformedValue = expression.value
+                    ? transform(getValue(expression.value), theme)
+                    : expression
+
+                  if (
+                    expression.value &&
+                    typeof transformedValue === 'object'
+                  ) {
                     Object.entries(transformedValue).forEach(([key, value]) => {
                       defaultEntries.push([key, getValueType(value)])
                     })
