@@ -3,7 +3,15 @@ import { Spacer, Stack, Text } from 'system'
 export default function App({ active }) {
   return (
     <Stack spaceBetween={2}>
-      <Text color={[[active, 'brand']]}>Heading</Text>
+      <Text
+        variant="heading1"
+        color={[
+          ['default', 'pink'],
+          [active, 'brand'],
+        ]}
+      >
+        Heading
+      </Text>
       <Spacer
         size={[
           ['default', '4px'],

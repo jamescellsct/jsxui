@@ -7,7 +7,15 @@ import { Spacer, Stack, Text } from 'system'
 export default function App({ active }) {
   return (
     <Stack spaceBetween={2}>
-      <Text color={[[active, 'brand']]}>Heading</Text>
+      <Text
+        variant="heading1"
+        color={[
+          ['default', 'pink'],
+          [active, 'brand'],
+        ]}
+      >
+        Heading
+      </Text>
       <Spacer
         size={[
           ['default', '4px'],
@@ -44,12 +52,17 @@ export default function App({ active }) {
         gap: 2,
       }}
     >
-      <span
+      <h1
         css={[
           {
             fontFamily: 'system-ui',
             whiteSpace: 'pre-wrap',
             margin: 0,
+            fontStyle: 'italic',
+            fontSize: 128,
+            filter:
+              'drop-shadow(0px 5px #3d157d) drop-shadow(0px 4px #3d157d) drop-shadow(0px 3px #3d157d) drop-shadow(0px 2px #3d157d) drop-shadow(0px 1px #3d157d)',
+            color: 'pink',
           },
           active && {
             color: '#8D6CEE',
@@ -57,7 +70,7 @@ export default function App({ active }) {
         ]}
       >
         Heading
-      </span>
+      </h1>
       <div
         css={{
           flex: '0 0 4px',
@@ -88,6 +101,7 @@ export default function App({ active }) {
             fontFamily: 'system-ui',
             whiteSpace: 'pre-wrap',
             margin: 0,
+            color: 'white',
           }}
         >
           Content

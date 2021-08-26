@@ -67,9 +67,22 @@ export default function (_, state): PluginObj<PluginOptions> {
     .filter(([key]) => key !== 'default')
     .map(([, component]) => {
       const { platforms, ...componentConfig } = component.config
+      const platformConfig = platforms[platform]
       return {
-        ...platforms[platform],
+        ...platformConfig,
         ...componentConfig,
+        defaults: {
+          ...platformConfig.defaults,
+          ...componentConfig.defaults,
+        },
+        transforms: {
+          ...platformConfig.transforms,
+          ...componentConfig.transforms,
+        },
+        variants: {
+          ...platformConfig.variants,
+          ...componentConfig.variants,
+        },
       }
     })
   let componentEntries
