@@ -1,20 +1,34 @@
-import * as t from '@babel/types'
-import path from 'path'
+import { PluginObj, PluginPass } from '@babel/core'
+import template from '@babel/template'
+import jsx from '@babel/plugin-syntax-jsx'
+
 import { createSyncFn } from 'synckit'
 
-const fetchImages = createSyncFn(path.resolve(__dirname, './fetch-images'))
+const fetchImages = createSyncFn(require.resolve('./fetch-images'))
 
-export function transformGraphic(path) {
-  const props = Object.fromEntries(
-    path.node.attributes
-      .filter((attribute) => attribute.type === 'JSXAttribute')
-      .map((attribute) => [attribute.name.name, attribute.value.value])
-  )
-  if (props.file && props.name) {
-    const base64source = fetchImages(props)
-    path.node.name.name = 'img'
-    path.node.attributes = [
-      t.jsxAttribute(t.jsxIdentifier('src'), t.stringLiteral(base64source)),
-    ]
+export default function (): PluginObj<PluginPass> {
+  return {
+    name: '@jsxui/babel-plugin',
+    inherits: jsx,
+    visitor: {
+      JSXElement(path, state) {
+        if (path.node.openingElement.name.name === 'Graphic') {
+          const props = Object.fromEntries(
+            path.node.openingElement.attributes
+              .filter((attribute) => attribute.type === 'JSXAttribute')
+              .map((attribute) => [attribute.name.name, attribute.value.value])
+          )
+          const options = {
+            ...state.opts,
+            ...props,
+          }
+          if (options.fileId && options.name) {
+            const jsx = fetchImages(options)
+            const ast = template.ast(jsx, { plugins: ['jsx'] })
+            path.replaceWith(ast.expression)
+          }
+        }
+      },
+    },
   }
 }

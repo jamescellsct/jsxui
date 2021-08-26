@@ -2,112 +2,148 @@
 
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
-import { Spacer, Stack, Text } from 'system'
+import { Graphic } from '@jsxui/react'
 
-export default function App({ active }) {
-  return (
-    <Stack spaceBetween={2}>
-      <Text
-        variant="heading1"
-        color={[
-          ['default', 'pink'],
-          [active, 'brand'],
-        ]}
-      >
-        Heading
-      </Text>
-      <Spacer
-        size={[
-          ['default', '4px'],
-          ['breakpoints.medium', '16px'],
-          ['breakpoints.large', '32px'],
-        ]}
-      />
-      <Stack
-        as="button"
-        axis={[['breakpoints.medium', 'x']]}
-        spaceBetween={[
-          ['default', 1],
-          ['breakpoints.medium', 2],
-        ]}
-        onClick={() => alert('Hello World!')}
-      >
-        <Text>Content</Text>
-      </Stack>
-    </Stack>
-  )
+export default function App() {
+  return <Graphic name="landing-page" />
 }
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import { Spacer, Stack, Text } from 'system'
-export default function App({ active }) {
+import { Graphic } from '@jsxui/react'
+export default function App() {
   return (
-    <div
-      css={{
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: 0,
-        minHeight: 0,
-        gap: 2,
-      }}
+    <svg
+      height="891"
+      width="1036"
+      fill="none"
+      viewBox="0 0 1036 891"
+      xmlns="http://www.w3.org/2000/svg"
     >
-      <h1
-        css={[
-          {
-            fontFamily: 'system-ui',
-            whiteSpace: 'pre-wrap',
-            margin: 0,
-            fontStyle: 'italic',
-            fontSize: 128,
-            filter:
-              'drop-shadow(0px 5px #3d157d) drop-shadow(0px 4px #3d157d) drop-shadow(0px 3px #3d157d) drop-shadow(0px 2px #3d157d) drop-shadow(0px 1px #3d157d)',
-            color: 'pink',
-          },
-          active && {
-            color: '#8D6CEE',
-          },
-        ]}
-      >
-        Heading
-      </h1>
-      <div
-        css={{
-          flex: '0 0 4px',
-          '@media screen and (min-width: 960px)': {
-            flex: '0 0 16px',
-          },
-          '@media screen and (min-width: 1200px)': {
-            flex: '0 0 32px',
-          },
-        }}
-      />
-      <button
-        onClick={() => alert('Hello World!')}
-        css={{
-          display: 'flex',
-          flexDirection: 'column',
-          minWidth: 0,
-          minHeight: 0,
-          gap: 1,
-          '@media screen and (min-width: 960px)': {
-            flexDirection: 'row',
-            gap: 2,
-          },
-        }}
-      >
-        <span
-          css={{
-            fontFamily: 'system-ui',
-            whiteSpace: 'pre-wrap',
-            margin: 0,
-            color: 'white',
-          }}
+      <g clipPath="url(#clip0)">
+        <path
+          d="M0 74.0307C0 33.1447 33.1446 0 74.0306 0H961.473C1002.36 0 1035.5 33.1446 1035.5 74.0306V816.969C1035.5 857.855 1002.36 891 961.473 891H74.0306C33.1446 891 0 857.855 0 816.969V74.0307Z"
+          fill="url(#paint0_linear)"
+        />
+        <ellipse
+          cx="1016.26"
+          cy="445.184"
+          fill="white"
+          fillOpacity="0.2"
+          rx="557.506"
+          ry="559.399"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="88.1769"
+          y="659.115"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="555.258"
+          y="659.115"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="789.138"
+          y="659.115"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.6"
+          x="555.297"
+          y="701.805"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.8"
+          x="789.177"
+          y="701.805"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="321.218"
+          y="659.115"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.6"
+          x="321.473"
+          y="701.805"
+        />
+        <rect
+          height="64.364"
+          width="507.34"
+          fill="white"
+          x="87.7118"
+          y="214.547"
+        />
+        <rect
+          height="64.364"
+          width="350.847"
+          fill="white"
+          x="87.7118"
+          y="120.525"
+        />
+        <rect
+          height="174.161"
+          width="297.841"
+          fill="white"
+          fillOpacity="0.6"
+          x="87.7118"
+          y="335.703"
+        />
+        <rect
+          height="13.2514"
+          width="124.942"
+          fill="white"
+          fillOpacity="0.6"
+          x="88.9738"
+          y="75.7222"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.6"
+          x="87.7118"
+          y="701.805"
+        />
+      </g>
+      <defs>
+        <linearGradient
+          id="paint0_linear"
+          gradientUnits="userSpaceOnUse"
+          x1="517.752"
+          x2="517.752"
+          y1="0"
+          y2="891"
         >
-          Content
-        </span>
-      </button>
-    </div>
+          <stop stopColor="#40197E" />
+          <stop offset="1" stopColor="#2D1D48" />
+        </linearGradient>
+        <clipPath id="clip0">
+          <path
+            d="M0 74.0307C0 33.1447 33.1446 0 74.0306 0H961.473C1002.36 0 1035.5 33.1446 1035.5 74.0306V816.969C1035.5 857.855 1002.36 891 961.473 891H74.0306C33.1446 891 0 857.855 0 816.969V74.0307Z"
+            fill="white"
+          />
+        </clipPath>
+      </defs>
+    </svg>
   )
 }
 

@@ -7,6 +7,7 @@ build({
     'src/compiler.ts',
     'src/create-component.ts',
     'src/fetch-images.ts',
+    'src/graphic.ts',
   ],
   outdir: 'dist',
   bundle: true,

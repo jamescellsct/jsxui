@@ -1,8 +1,5 @@
 import { Graphic } from '@jsxui/react'
 
-// https://www.figma.com/file/CPiIvxuJKkcompqr9PKXap/Material-Design-Icons-(Community)
 export default function App() {
-  return (
-    <Graphic file="CPiIvxuJKkcompqr9PKXap" page="Filled" name="check_box" />
-  )
+  return <Graphic name="landing-page" />
 }
