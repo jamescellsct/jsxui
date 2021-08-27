@@ -12,7 +12,7 @@ build({
   outdir: 'dist',
   bundle: true,
   platform: 'node',
-  target: 'es2015',
+  target: 'es2019',
   external: Object.keys(peerDependencies).concat(Object.keys(dependencies)),
   watch: process.argv.includes('--watch'),
 })

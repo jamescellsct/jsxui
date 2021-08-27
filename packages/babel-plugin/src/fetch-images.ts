@@ -11,30 +11,58 @@ const client = Client({ personalAccessToken: process.env.FIGMA_TOKEN })
 const cacheDirectory = '.cache'
 const cachePath = `${cacheDirectory}/fetch-images.json`
 
-runAsWorker(async ({ fileId, name }) => {
+runAsWorker(async ({ fileId, layerNames }) => {
   const file = await client.file(fileId)
-  const entry = Object.entries(file.data.components).find(
-    ([_, value]) => value.name === name
+  const componentEntries = Object.entries(file.data.components).filter(
+    ([_, value]) => layerNames.includes(value.name)
   )
-  if (entry) {
-    const [imageId] = entry
-    return getImage(fileId, imageId, file.data.lastModified)
+
+  layerNames.forEach((name) => {
+    const values = componentEntries.map(([_, value]) => value.name)
+    if (!values.includes(name)) {
+      throw Error(
+        [
+          `<Graphic name="${name}" /> was not exported as a component in the file: ${file.data.name}`,
+          `Make sure the layer is a component and is included in the file.`,
+        ].join('\n')
+      )
+    }
+  })
+
+  if (componentEntries.length > 0) {
+    return getImages({
+      fileId,
+      layerNames,
+      imageIds: componentEntries.map(([id]) => id),
+      lastModified: file.data.lastModified,
+    })
   }
-  return null
+
+  throw Error(
+    `No components were found in file: ${fileId}. Make sure there is at least one exported component in your Figma file.`
+  )
 })
 
-async function getImage(fileId, imageId, lastModified) {
+async function getImages({ fileId, layerNames, imageIds, lastModified }) {
   const writeCache = async () => {
     const { images } = (
       await client.fileImages(fileId, {
-        ids: [imageId], // TODO: collect all ids in file and fetch all at once
+        ids: imageIds,
         format: 'svg',
       })
     ).data
-    const svg = await getImageFromSource(images[imageId])
-    const jsx = await svgToJsx(svg)
-    await fs.writeFile(cachePath, JSON.stringify({ lastModified, jsx }))
-    return jsx
+    const jsxSourcesArray = await Promise.all(
+      imageIds.map(async (imageId) => {
+        const svg = await getImageFromSource(images[imageId])
+        const jsx = await svgToJsx(svg)
+        return jsx
+      })
+    )
+    const jsxSources = Object.fromEntries(
+      jsxSourcesArray.map((source, index) => [layerNames[index], source])
+    )
+    await fs.writeFile(cachePath, JSON.stringify({ lastModified, jsxSources }))
+    return jsxSources
   }
 
   // prime cache directory
@@ -46,7 +74,7 @@ async function getImage(fileId, imageId, lastModified) {
   try {
     const contents = JSON.parse(await fs.readFile(cachePath, 'utf-8'))
     if (contents.lastModified === lastModified) {
-      return contents.jsx
+      return contents.jsxSources
     }
     return writeCache()
   } catch {
