@@ -1,15 +1,15 @@
 import pluginTester from 'babel-plugin-tester'
 import path from 'path'
 
-import plugin from './compiler'
-// import plugin from './graphic'
+// import plugin from './compiler'
+import plugin from './graphic'
 
 pluginTester({
   plugin,
   pluginName: '@jsxui/babel-plugin',
   pluginOptions: {
-    entry: path.resolve(__dirname, '../../site/system'),
-    // fileId: '4nkPu4S33R3FDsqUCTfpmy',
+    // entry: path.resolve(__dirname, '../../site/system'),
+    fileId: '4nkPu4S33R3FDsqUCTfpmy',
   },
   filename: __filename,
   snapshot: true,
@@ -26,9 +26,9 @@ pluginTester({
     // { fixture: '__fixtures__/props.js' },
     // { fixture: '__fixtures__/simple.js' },
     // { fixture: '__fixtures__/variable.js' },
-    // { fixture: '__fixtures__/graphic.js' },
+    { fixture: '__fixtures__/graphic.js' },
     // { fixture: '__fixtures__/expression.js' },
     // { fixture: '__fixtures__/as.js' },
-    { fixture: '__fixtures__/css-prop.js' },
+    // { fixture: '__fixtures__/css-prop.js' },
   ],
 })

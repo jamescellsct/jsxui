@@ -2,40 +2,165 @@
 
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
-import { Text } from 'system'
+import { Graphic } from '@jsxui/react'
 
-// TODO: process all props and try to replace system values?
 export default function App() {
   return (
-    <Text color="brand" css={{ ':hover': { color: 'pink' } }}>
-      Hello World
-    </Text>
+    <Graphic
+      name="landing-page"
+      width="100%"
+      css={{
+        transform: 'translate(50vw, -50%)',
+        position: 'fixed',
+        top: '50%',
+        left: 0,
+      }}
+    />
   )
 }
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import { Text } from 'system' // TODO: process all props and try to replace system values?
-
+import { Graphic } from '@jsxui/react'
 export default function App() {
   return (
-    <span
-      css={[
-        {
-          fontFamily: 'system-ui',
-          whiteSpace: 'pre-wrap',
-          margin: 0,
-          color: '#8D6CEE',
-        },
-        {
-          ':hover': {
-            color: 'pink',
-          },
-        },
-      ]}
+    <svg
+      height="891"
+      fill="none"
+      viewBox="0 0 1036 891"
+      xmlns="http://www.w3.org/2000/svg"
+      width="100%"
+      css={{
+        transform: 'translate(50vw, -50%)',
+        position: 'fixed',
+        top: '50%',
+        left: 0,
+      }}
     >
-      Hello World
-    </span>
+      <g clipPath="url(#clip0)">
+        <path
+          d="M0 74.0307C0 33.1447 33.1446 0 74.0306 0H961.473C1002.36 0 1035.5 33.1446 1035.5 74.0306V816.969C1035.5 857.855 1002.36 891 961.473 891H74.0306C33.1446 891 0 857.855 0 816.969V74.0307Z"
+          fill="url(#paint0_linear)"
+        />
+        <ellipse
+          cx="1016.26"
+          cy="445.184"
+          fill="white"
+          fillOpacity="0.2"
+          rx="557.506"
+          ry="559.399"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="88.1769"
+          y="659.115"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="555.258"
+          y="659.115"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="789.138"
+          y="659.115"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.7"
+          x="555.297"
+          y="701.805"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.7"
+          x="789.177"
+          y="701.805"
+        />
+        <rect
+          height="25.0044"
+          width="90.0157"
+          fill="white"
+          x="321.218"
+          y="659.115"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.7"
+          x="321.473"
+          y="701.805"
+        />
+        <rect
+          height="64.364"
+          width="507.34"
+          fill="white"
+          x="87.7118"
+          y="214.547"
+        />
+        <rect
+          height="64.364"
+          width="350.847"
+          fill="white"
+          x="87.7118"
+          y="120.525"
+        />
+        <rect
+          height="174.161"
+          width="297.841"
+          fill="white"
+          fillOpacity="0.7"
+          x="87.7118"
+          y="335.703"
+        />
+        <rect
+          height="13.2514"
+          width="124.942"
+          fill="white"
+          fillOpacity="0.6"
+          x="88.9738"
+          y="75.7222"
+        />
+        <rect
+          height="100.271"
+          width="159.326"
+          fill="white"
+          fillOpacity="0.7"
+          x="87.7118"
+          y="701.805"
+        />
+      </g>
+      <defs>
+        <linearGradient
+          id="paint0_linear"
+          gradientUnits="userSpaceOnUse"
+          x1="517.752"
+          x2="517.752"
+          y1="0"
+          y2="891"
+        >
+          <stop stopColor="#40197E" />
+          <stop offset="1" stopColor="#2D1D48" />
+        </linearGradient>
+        <clipPath id="clip0">
+          <path
+            d="M0 74.0307C0 33.1447 33.1446 0 74.0306 0H961.473C1002.36 0 1035.5 33.1446 1035.5 74.0306V816.969C1035.5 857.855 1002.36 891 961.473 891H74.0306C33.1446 891 0 857.855 0 816.969V74.0307Z"
+            fill="white"
+          />
+        </clipPath>
+      </defs>
+    </svg>
   )
 }
 
