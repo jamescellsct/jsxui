@@ -28,6 +28,7 @@ pluginTester({
     // { fixture: '__fixtures__/variable.js' },
     // { fixture: '__fixtures__/graphic.js' },
     // { fixture: '__fixtures__/expression.js' },
-    { fixture: '__fixtures__/as.js' },
+    // { fixture: '__fixtures__/as.js' },
+    { fixture: '__fixtures__/css-prop.js' },
   ],
 })

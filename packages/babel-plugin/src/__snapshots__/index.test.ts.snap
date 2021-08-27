@@ -2,48 +2,40 @@
 
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
-import { Stack, Text } from 'system'
-import { motion } from 'framer-motion'
+import { Text } from 'system'
 
+// TODO: process all props and try to replace system values?
 export default function App() {
   return (
-    <Stack as={motion.div} initial={{ x: 0 }} animate={{ x: 100 }}>
-      <Text>Hello World</Text>
-    </Stack>
+    <Text color="brand" css={{ ':hover': { color: 'pink' } }}>
+      Hello World
+    </Text>
   )
 }
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import { Stack, Text } from 'system'
-import { motion } from 'framer-motion'
+import { Text } from 'system' // TODO: process all props and try to replace system values?
+
 export default function App() {
   return (
-    <motion.div
-      initial={{
-        x: 0,
-      }}
-      animate={{
-        x: 100,
-      }}
-      css={{
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: 0,
-        minHeight: 0,
-      }}
-    >
-      <span
-        css={{
+    <span
+      css={[
+        {
           fontFamily: 'system-ui',
           whiteSpace: 'pre-wrap',
           margin: 0,
-          color: 'white',
-        }}
-      >
-        Hello World
-      </span>
-    </motion.div>
+          color: '#8D6CEE',
+        },
+        {
+          ':hover': {
+            color: 'pink',
+          },
+        },
+      ]}
+    >
+      Hello World
+    </span>
   )
 }
 
