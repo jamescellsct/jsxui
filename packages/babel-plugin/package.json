@@ -12,6 +12,7 @@
     "url": "git+https://github.com/souporserious/jsxui.git"
   },
   "main": "dist/index.js",
+  "types": "types.d.ts",
   "files": [
     "dist"
   ],

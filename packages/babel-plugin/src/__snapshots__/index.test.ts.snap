@@ -2,8 +2,6 @@
 
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
-import { Graphic } from '@jsxui/react'
-
 export default function App() {
   return (
     <Graphic
@@ -21,7 +19,6 @@ export default function App() {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-import { Graphic } from '@jsxui/react'
 export default function App() {
   return (
     <svg
