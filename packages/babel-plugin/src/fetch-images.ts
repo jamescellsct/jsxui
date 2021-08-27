@@ -1,17 +1,19 @@
+import { existsSync, promises as fs } from 'fs'
 import { get } from 'https'
 import { runAsWorker } from 'synckit'
 import { config } from 'dotenv'
 import { Client } from 'figma-js'
+import crypto from 'crypto'
 import svgToJsx from 'svg-to-jsx'
-import { existsSync, promises as fs } from 'fs'
+
+import { filterDuplicates } from './utils'
 
 config()
 
 const client = Client({ personalAccessToken: process.env.FIGMA_TOKEN })
 const cacheDirectory = '.cache'
-const cachePath = `${cacheDirectory}/fetch-images.json`
 
-runAsWorker(async ({ fileId, layerNames }) => {
+runAsWorker(async ({ fileName, fileId, layerNames }) => {
   const file = await client.file(fileId)
   const componentEntries = Object.entries(file.data.components).filter(
     ([_, value]) => layerNames.includes(value.name)
@@ -31,9 +33,10 @@ runAsWorker(async ({ fileId, layerNames }) => {
 
   if (componentEntries.length > 0) {
     return getImages({
+      fileName,
       fileId,
-      layerNames,
-      imageIds: componentEntries.map(([id]) => id),
+      layerNames: filterDuplicates(layerNames),
+      imageIds: filterDuplicates(componentEntries.map(([id]) => id)),
       lastModified: file.data.lastModified,
     })
   }
@@ -43,7 +46,15 @@ runAsWorker(async ({ fileId, layerNames }) => {
   )
 })
 
-async function getImages({ fileId, layerNames, imageIds, lastModified }) {
+async function getImages({
+  fileName,
+  fileId,
+  layerNames,
+  imageIds,
+  lastModified,
+}) {
+  const fileNameHash = crypto.createHash('md5').update(fileName).digest('hex')
+  const cachePath = `${cacheDirectory}/${fileNameHash}.json`
   const writeCache = async () => {
     const { images } = (
       await client.fileImages(fileId, {

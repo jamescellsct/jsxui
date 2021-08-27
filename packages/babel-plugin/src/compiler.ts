@@ -3,6 +3,8 @@ import * as t from '@babel/types'
 import jsx from '@babel/plugin-syntax-jsx'
 import get from 'dlv'
 
+import { filterDuplicates } from './utils'
+
 type PluginOptions = {
   opts: {
     // TODO: rename to elements to better match what they're called in the AST?
@@ -405,15 +407,7 @@ export default function (_, state): PluginObj<PluginOptions> {
           })
 
           // Remove duplicates
-          defaultEntries = defaultEntries.filter((entry, index) => {
-            let duplicateIndex = -1
-            defaultEntries.forEach((possibleDuplicateEntry, index) => {
-              if (possibleDuplicateEntry[0] === entry[0]) {
-                duplicateIndex = index
-              }
-            })
-            return duplicateIndex > -1 ? duplicateIndex === index : true
-          })
+          defaultEntries = filterDuplicates(defaultEntries, (value) => value[0])
 
           componentEntries[id.name] = {
             defaultEntries,

@@ -1,8 +1,9 @@
 import { PluginObj, PluginPass } from '@babel/core'
 import template from '@babel/template'
 import jsx from '@babel/plugin-syntax-jsx'
-
 import { createSyncFn } from 'synckit'
+
+import { filterDuplicates } from './utils'
 
 const fetchImages = createSyncFn(require.resolve('./fetch-images'))
 
@@ -40,16 +41,9 @@ const elementVisitor = {
         ]
 
         // remove any preceding duplicates and set new attributes
-        ast.expression.openingElement.attributes = mergedAttributes.filter(
-          (attribute, index) => {
-            let duplicateIndex = -1
-            mergedAttributes.forEach((possibleDuplicate, index) => {
-              if (possibleDuplicate.name.name === attribute.name.name) {
-                duplicateIndex = index
-              }
-            })
-            return duplicateIndex > -1 ? duplicateIndex === index : true
-          }
+        ast.expression.openingElement.attributes = filterDuplicates(
+          mergedAttributes,
+          (value) => value.name.name
         )
 
         // finally replace our Graphic component with the compiled svg
@@ -69,6 +63,7 @@ export default function (): PluginObj<PluginPass> {
         path.traverse(propsVisitor, { layerNames })
         const jsxSources = fetchImages({
           fileId: state.opts.fileId,
+          fileName: state.filename,
           layerNames,
         })
         path.traverse(elementVisitor, { jsxSources })
