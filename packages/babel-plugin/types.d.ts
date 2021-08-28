@@ -5,7 +5,7 @@ export type GraphicProps = {
   name: string
 
   /** The associated Figma file id found in the url or share link. */
-  fileId: string
+  fileId?: string
 } & React.SVGProps<SVGSVGElement>
 
 declare global {
