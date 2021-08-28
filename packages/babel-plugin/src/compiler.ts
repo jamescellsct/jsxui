@@ -1,4 +1,5 @@
 import { PluginObj, PluginPass } from '@babel/core'
+import template from '@babel/template'
 import * as t from '@babel/types'
 import jsx from '@babel/plugin-syntax-jsx'
 import get from 'dlv'
@@ -207,6 +208,7 @@ export default function (_, state): PluginObj<PluginOptions> {
           let defaultEntries: Array<[string, any]> = []
           const variantEntries: Array<[any, any]> = []
           const breakpointEntries: Array<[string, any]> = []
+          const transformEntries: Array<[string, any]> = []
           const attributes: Array<t.JSXAttribute> = []
 
           const pushKeyValueProp = (key, value) => {
@@ -361,27 +363,42 @@ export default function (_, state): PluginObj<PluginOptions> {
                       ])
                     }
                   })
+                  // } else if (expression.type === 'Expression') {
                 } else {
+                  console.log(expression)
                   // <Stack axis={'x'} />
                   // TODO: Can we use component transforms at runtime when we can't
                   // statically transform? <div css={{ width: Stack.transform(width) }} />
                   // TODO: use path.get('value').get('expression').evaluate() where applicable
-                  const transformedValue = expression.value
-                    ? transform(getValue(expression.value), theme)
-                    : expression
-
-                  if (
-                    expression.value &&
-                    typeof transformedValue === 'object'
-                  ) {
-                    Object.entries(transformedValue).forEach(([key, value]) => {
-                      defaultEntries.push([key, getValueType(value)])
-                    })
+                  if (expression.value) {
+                    const transformedValue = transform(
+                      getValue(expression.value),
+                      theme
+                    )
+                    if (typeof transformedValue === 'object') {
+                      Object.entries(transformedValue).forEach(
+                        ([key, value]) => {
+                          defaultEntries.push([key, getValueType(value)])
+                        }
+                      )
+                    } else {
+                      defaultEntries.push([
+                        attribute.name.name,
+                        getValueType(transformedValue),
+                      ])
+                    }
                   } else {
-                    defaultEntries.push([
-                      attribute.name.name,
-                      getValueType(transformedValue),
-                    ])
+                    // Since we don't know what output transforms return
+                    // we use the config object attached in createComponent to
+                    // use the respective transform utility at runtime
+                    // we can possibly infer through return types in the future
+                    // to optimize further and determine what the final output
+                    // should be?
+                    const callExpression = template(
+                      `${component.name}.config.transforms.${attribute.name.name}(EXPRESSION)`
+                    )
+                    const ast = callExpression({ EXPRESSION: expression })
+                    transformEntries.push(t.spreadElement(ast.expression))
                   }
                 }
               } else {
@@ -425,6 +442,7 @@ export default function (_, state): PluginObj<PluginOptions> {
               id: id.name,
               defaultEntries,
               breakpointEntries,
+              transformEntries,
               variantEntries,
             }
             if (visitor.JSXElement) {
