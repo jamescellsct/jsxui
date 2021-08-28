@@ -7,6 +7,30 @@ import { filterDuplicates } from './utils'
 
 const fetchImages = createSyncFn(require.resolve('./fetch-images'))
 
+export default function (): PluginObj<PluginPass> {
+  return {
+    name: '@jsxui/babel-plugin',
+    inherits: jsx,
+    visitor: {
+      Program(path, state) {
+        const layerNames = []
+
+        path.traverse(propsVisitor, { layerNames })
+
+        if (layerNames.length > 0) {
+          const jsxSources = fetchImages({
+            fileId: state.opts.fileId,
+            fileName: state.filename,
+            layerNames,
+          })
+
+          path.traverse(elementVisitor, { jsxSources })
+        }
+      },
+    },
+  }
+}
+
 const propsVisitor = {
   JSXOpeningElement(path, state) {
     if (path.node.name.name === 'Graphic') {
@@ -51,23 +75,4 @@ const elementVisitor = {
       }
     }
   },
-}
-
-export default function (): PluginObj<PluginPass> {
-  return {
-    name: '@jsxui/babel-plugin',
-    inherits: jsx,
-    visitor: {
-      Program(path, state) {
-        const layerNames = []
-        path.traverse(propsVisitor, { layerNames })
-        const jsxSources = fetchImages({
-          fileId: state.opts.fileId,
-          fileName: state.filename,
-          layerNames,
-        })
-        path.traverse(elementVisitor, { jsxSources })
-      },
-    },
-  }
 }
