@@ -1,6 +1,9 @@
 # Mac files
 .DS_Store
 
+# JSXUI
+.jsxui
+
 # NPM
 .npm
 node_modules

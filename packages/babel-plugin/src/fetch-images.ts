@@ -11,7 +11,7 @@ import { filterDuplicates } from './utils'
 config()
 
 const client = Client({ personalAccessToken: process.env.FIGMA_TOKEN })
-const cacheDirectory = '.cache'
+const cacheDirectory = '.jsxui'
 
 runAsWorker(async ({ fileName, fileId, layerNames }) => {
   const file = await client.file(fileId)
