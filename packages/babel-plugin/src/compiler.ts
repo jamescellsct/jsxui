@@ -365,7 +365,6 @@ export default function (_, state): PluginObj<PluginOptions> {
                   })
                   // } else if (expression.type === 'Expression') {
                 } else {
-                  console.log(expression)
                   // <Stack axis={'x'} />
                   // TODO: Can we use component transforms at runtime when we can't
                   // statically transform? <div css={{ width: Stack.transform(width) }} />

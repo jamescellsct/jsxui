@@ -13,4 +13,15 @@ declare global {
   function Graphic(props: GraphicProps): JSX.Element
 }
 
+declare module '@jsxui/babel-plugin/dist/create-component' {
+  export function createComponent<T>(config: any): {
+    (props: T): React.DetailedReactHTMLElement<
+      React.InputHTMLAttributes<HTMLInputElement>,
+      HTMLInputElement
+    >
+    displayName: any
+    config: any
+  }
+}
+
 export {}
