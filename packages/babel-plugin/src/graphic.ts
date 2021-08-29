@@ -69,16 +69,16 @@ const elementVisitor = {
         // remove any preceding duplicates and set new attributes
         ast.expression.openingElement.attributes = filterDuplicates(
           mergedAttributes,
-          (value) => value.name.name
+          (attribute) => attribute.name.name
         )
 
-        // handle transforms from Layer components
+        // store transforms from <Layer /> components
         const layerTransforms = {}
 
         // find all layer components and their transforms
         path.traverse(layerVisitor, { layerTransforms })
 
-        // replace our Graphic component with the compiled svg
+        // replace <Graphic /> component with the compiled svg
         path.replaceWith(ast.expression)
 
         // now traverse the svg to apply any transforms
@@ -98,6 +98,7 @@ const layerVisitor = {
           .filter((attribute) => attribute.type === 'JSXAttribute')
           .map((attribute) => [attribute.name.name, attribute])
       )
+
       state.layerTransforms[name.value.value] = restProps
     }
   },
@@ -108,33 +109,49 @@ const svgElementVisitor = {
     const idAttribute = path.node.openingElement.attributes.find(
       (attribute) => attribute.name.name === 'id'
     )
+
     if (idAttribute) {
       const transformAttributes = state.layerTransforms[idAttribute.value.value]
+
       if (transformAttributes) {
         const { as, ...restAttributes } = transformAttributes
+
         if (as.value.type === 'JSXExpressionContainer') {
           const { object, property } = as.value.expression
           const expression = t.jsxMemberExpression(
             t.jsxIdentifier(object.name),
             t.jsxIdentifier(property.name)
           )
+
           path.node.openingElement.name = expression
+
           if (path.node.closingElement) {
             path.node.closingElement.name = expression
           }
         } else {
           path.node.openingElement.name.name = as.value.value
+
           if (path.node.closingElement) {
             path.node.closingElement.name.name = as.value.value
           }
         }
+
         if (restAttributes) {
-          path.node.openingElement.attributes = filterDuplicates([
-            ...path.node.openingElement.attributes,
-            ...Object.values(restAttributes),
-          ])
+          path.node.openingElement.attributes = filterDuplicates(
+            [
+              ...path.node.openingElement.attributes,
+              ...Object.values(restAttributes),
+            ],
+            (attribute) => attribute.name.name
+          )
         }
       }
+
+      // Remove id attribute from SVG since we don't need it
+      path.node.openingElement.attributes =
+        path.node.openingElement.attributes.filter(
+          (attribute) => attribute.name.name !== 'id'
+        )
     }
   },
 }

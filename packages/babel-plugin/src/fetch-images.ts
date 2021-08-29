@@ -19,6 +19,11 @@ runAsWorker(async ({ fileName, fileId, layerNames }) => {
     ([_, value]) => layerNames.includes(value.name)
   )
 
+  // order component entries by layer names
+  componentEntries.sort(
+    (a, b) => layerNames.indexOf(a[1].name) - layerNames.indexOf(b[1].name)
+  )
+
   layerNames.forEach((name) => {
     const values = componentEntries.map(([_, value]) => value.name)
     if (!values.includes(name)) {
