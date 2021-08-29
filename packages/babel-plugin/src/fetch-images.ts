@@ -60,6 +60,7 @@ async function getImages({
       await client.fileImages(fileId, {
         ids: imageIds,
         format: 'svg',
+        svg_include_id: true,
       })
     ).data
     const jsxSourcesArray = await Promise.all(
