@@ -143,7 +143,6 @@ export const Text = createComponent<TextProps>({
     web: {
       as: 'span',
       defaults: {
-        fontFamily: 'system-ui',
         whiteSpace: 'pre-wrap',
         margin: 0,
         cursor: 'default',
