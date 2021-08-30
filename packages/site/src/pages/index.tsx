@@ -105,7 +105,14 @@ export default function Code() {
         <Spacer size="200px" />
         <Stack axis="x">
           <Spacer />
-          <Text variant="heading1" alignment="center">
+          <Text
+            variant="heading1"
+            size={[
+              ['default', 'medium'],
+              ['breakpoints.medium', 'xlarge'],
+            ]}
+            alignment="center"
+          >
             The Design Compiler
           </Text>
           <Spacer />
@@ -136,7 +143,10 @@ export default function Code() {
       </Stack>
       <Spacer size="80px" />
       <Stack
-        axis="x"
+        axis={[
+          ['default', 'y'],
+          ['breakpoints.medium', 'x'],
+        ]}
         height="1fr"
         background="surfaceDark"
         css={{
