@@ -8,7 +8,7 @@ import { format } from 'prettier/standalone'
 import tsParser from 'prettier/parser-typescript'
 import { transform } from '@babel/standalone'
 
-import { Spacer, Stack, Text } from 'system'
+import { Spacer, Stack, Text, theme } from 'system'
 import * as system from 'system'
 
 const codeString = `
@@ -82,15 +82,16 @@ export default function Code() {
     setParsedCode(parseCode(code, activePlatform.toLowerCase()))
   }, [activePlatform, code])
   return (
-    <Stack height="100vh">
+    <Stack>
       <Stack axis="x" space={24} spaceBetween={24}>
-        <Text>JSXUI</Text>
+        <Graphic name="logo" />
         <Spacer />
         <Text
           as="a"
           href="https://twitter.com/jsxui"
           css={{ textDecoration: 'none', cursor: 'pointer' }}
         >
+          {/* <Graphic name="twitter" /> */}
           Twitter
         </Text>
         <Text
@@ -98,11 +99,17 @@ export default function Code() {
           href="https://github.com/souporserious/jsxui"
           css={{ textDecoration: 'none', cursor: 'pointer' }}
         >
+          {/* <Graphic name="github" /> */}
           GitHub
         </Text>
       </Stack>
       <Stack>
-        <Spacer size="200px" />
+        <Spacer
+          size={[
+            ['default', '80px'],
+            ['breakpoints.medium', '50px'],
+          ]}
+        />
         <Stack axis="x">
           <Spacer />
           <Text
@@ -113,12 +120,20 @@ export default function Code() {
             ]}
             alignment="center"
           >
-            The Design Compiler
+            The Design
+            <br />
+            Compiler
           </Text>
           <Spacer />
         </Stack>
         <Spacer size="64px" />
-        <Stack axis="x">
+        <Stack
+          axis="x"
+          css={{
+            display: 'none',
+            [theme.breakpoints.medium]: { display: 'flex' },
+          }}
+        >
           <Spacer />
           <NextLink href="/presentation" passHref>
             <Stack
@@ -147,10 +162,11 @@ export default function Code() {
           ['default', 'y'],
           ['breakpoints.medium', 'x'],
         ]}
-        height="1fr"
+        height={[['breakpoints.medium', '1fr']]}
         background="surfaceDark"
         css={{
           fontSize: 20,
+          minHeight: 800,
           overflow: 'auto',
         }}
       >
