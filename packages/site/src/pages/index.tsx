@@ -76,7 +76,7 @@ function HighlightCode({ codeString }) {
 
 const platforms = ['Web', 'Ink', 'Native', 'Figma']
 
-export default function Code() {
+export default function Index() {
   const [activePlatform, setActivePlatform] = React.useState('Web')
   const [code, setCode] = React.useState(codeString)
   const [parsedCode, setParsedCode] = React.useState(null)
@@ -194,7 +194,6 @@ export default function Code() {
         ]}
         height={[['breakpoints.medium', '1fr']]}
         background="surfaceDark"
-        css={{ minHeight: 'auto' }}
       >
         <Stack width="1fr">
           <Stack axis="x" space={16}>
@@ -217,22 +216,24 @@ export default function Code() {
               <Spacer />
             </Stack>
           </Stack>
-          <LiveProvider
-            code={code}
-            transformCode={(input) => {
-              try {
-                setCode(input)
-                return parseCode(input, activePlatform)
-              } catch (err) {
-                console.log(err)
-                return input
-              }
-            }}
-            noInline
-            theme={dracula}
-          >
-            <LiveEditor css={{ flex: 1 }} />
-          </LiveProvider>
+          <Stack css={{ overflow: 'auto' }}>
+            <LiveProvider
+              code={code}
+              transformCode={(input) => {
+                try {
+                  setCode(input)
+                  return parseCode(input, activePlatform)
+                } catch (err) {
+                  console.log(err)
+                  return input
+                }
+              }}
+              noInline
+              theme={dracula}
+            >
+              <LiveEditor css={{ flex: 1 }} />
+            </LiveProvider>
+          </Stack>
         </Stack>
         <Stack width="1fr">
           <Stack axis="x" space={16} spaceBetween={8}>
@@ -261,7 +262,9 @@ export default function Code() {
               <Text>Loading...</Text>
             </Stack>
           ) : (
-            <HighlightCode codeString={parsedCode} />
+            <Stack css={{ overflow: 'auto' }}>
+              <HighlightCode codeString={parsedCode} />
+            </Stack>
           )}
         </Stack>
       </Stack>
