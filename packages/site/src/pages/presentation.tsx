@@ -1031,7 +1031,16 @@ function WhyThisIsImportant() {
     'Offers consistency',
     'Focus on better tasks',
     'Fully declarative',
-    'Pit of success for all',
+    <>
+      <Text
+        as="a"
+        href="https://blog.codinghorror.com/falling-into-the-pit-of-success/"
+        css={{ color: 'white' }}
+      >
+        Pit of success
+      </Text>{' '}
+      for all
+    </>,
   ]
   const { activeIndex } = useSlideStepper({ maxIndex: reasons.length })
   return (
