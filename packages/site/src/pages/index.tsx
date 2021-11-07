@@ -234,14 +234,13 @@ export default function Code() {
             <LiveEditor css={{ flex: 1 }} />
           </LiveProvider>
         </Stack>
-        {parsedCode && (
-          <Stack width="1fr">
-            <Stack axis="x" space={16} spaceBetween={8}>
-              <Text variant="heading2" size={32}>
-                Output
-              </Text>
-              <Spacer size={16} />
-              {/* {platforms.map((platform) => (
+        <Stack width="1fr">
+          <Stack axis="x" space={16} spaceBetween={8}>
+            <Text variant="heading2" size={32}>
+              Output
+            </Text>
+            <Spacer size={16} />
+            {/* {platforms.map((platform) => (
                 <Stack
                   key={platform}
                   as="button"
@@ -256,10 +255,15 @@ export default function Code() {
                   <Text key={platform}>{platform}</Text>
                 </Stack>
               ))} */}
-            </Stack>
-            <HighlightCode codeString={parsedCode} />
           </Stack>
-        )}
+          {parsedCode === null ? (
+            <Stack padding={16}>
+              <Text>Loading...</Text>
+            </Stack>
+          ) : (
+            <HighlightCode codeString={parsedCode} />
+          )}
+        </Stack>
       </Stack>
     </Stack>
   )
