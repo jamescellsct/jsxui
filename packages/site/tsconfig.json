@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "system": ["src/system/index"]
-    }
+    },
+    "incremental": true
   },
   "include": ["next-env.d.ts", "types.d.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

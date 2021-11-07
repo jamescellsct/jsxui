@@ -78,7 +78,7 @@ export const Stack = createComponent<StackProps>({
       paddingBottom: getValue(value, 'boxSpacings'),
     }),
     spaceBetween: (value) => ({
-      gap: value,
+      gap: getValue(value, 'boxSpacings'),
     }),
     cornerRadius: (value) => ({
       borderRadius: value,
@@ -141,6 +141,7 @@ export const Stack = createComponent<StackProps>({
       defaults: {
         display: 'flex',
         flexDirection: 'column',
+        flexShrink: 0,
       },
     },
   },

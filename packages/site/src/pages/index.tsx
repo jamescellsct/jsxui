@@ -74,13 +74,17 @@ function HighlightCode({ codeString }) {
   )
 }
 
+const platforms = ['Web', 'Ink', 'Native', 'Figma']
+
 export default function Code() {
   const [activePlatform, setActivePlatform] = React.useState('Web')
   const [code, setCode] = React.useState(codeString)
   const [parsedCode, setParsedCode] = React.useState(null)
+
   React.useEffect(() => {
     setParsedCode(parseCode(code, activePlatform.toLowerCase()))
   }, [activePlatform, code])
+
   return (
     <Stack>
       <Stack axis="x" space={24} spaceBetween={24}>
@@ -126,6 +130,14 @@ export default function Code() {
           </Text>
           <Spacer />
         </Stack>
+        <Spacer size={24} />
+        <Stack axis="x">
+          <Spacer />
+          <Text size={32} weight={600}>
+            Coming Soon
+          </Text>
+          <Spacer />
+        </Stack>
         <Spacer size="64px" />
         <Stack
           axis="x"
@@ -135,6 +147,24 @@ export default function Code() {
           }}
         >
           <Spacer />
+          <Stack
+            as="a"
+            href="https://www.youtube.com/watch?v=RGQR79PbTFU"
+            width="176px"
+            variant="primaryLink"
+            css={{ textDecoration: 'none' }}
+          >
+            <Spacer size="16px" />
+            <Stack axis="x">
+              <Spacer />
+              <Text size="24px" css={{ cursor: 'pointer' }}>
+                Presentation
+              </Text>
+              <Spacer />
+            </Stack>
+            <Spacer size="16px" />
+          </Stack>
+          <Spacer size="16px" />
           <NextLink href="/presentation" passHref>
             <Stack
               as="a"
@@ -146,7 +176,7 @@ export default function Code() {
               <Stack axis="x">
                 <Spacer />
                 <Text size="24px" css={{ cursor: 'pointer' }}>
-                  Presentation
+                  Slides
                 </Text>
                 <Spacer />
               </Stack>
@@ -164,13 +194,29 @@ export default function Code() {
         ]}
         height={[['breakpoints.medium', '1fr']]}
         background="surfaceDark"
-        css={{
-          fontSize: 20,
-          minHeight: 800,
-          overflow: 'auto',
-        }}
+        css={{ minHeight: 'auto' }}
       >
         <Stack width="1fr">
+          <Stack axis="x" space={16}>
+            <Text variant="heading2" size={32}>
+              Input
+            </Text>
+            <Spacer size={16} />
+            <Stack>
+              <Spacer />
+              <Stack
+                spaceY={2}
+                spaceX={4}
+                background="#d142b0"
+                cornerRadius={4}
+              >
+                <Text weight={500} letterSpacing={0.1}>
+                  Editable
+                </Text>
+              </Stack>
+              <Spacer />
+            </Stack>
+          </Stack>
           <LiveProvider
             code={code}
             transformCode={(input) => {
@@ -184,13 +230,33 @@ export default function Code() {
             }}
             noInline
             theme={dracula}
-            css={{ margin: 0 }}
           >
-            <LiveEditor />
+            <LiveEditor css={{ flex: 1 }} />
           </LiveProvider>
         </Stack>
         {parsedCode && (
           <Stack width="1fr">
+            <Stack axis="x" space={16} spaceBetween={8}>
+              <Text variant="heading2" size={32}>
+                Output
+              </Text>
+              <Spacer size={16} />
+              {/* {platforms.map((platform) => (
+                <Stack
+                  key={platform}
+                  as="button"
+                  spaceX="small"
+                  spaceY="xsmall"
+                  background={[
+                    ['default', 'transparent'],
+                    [platform === activePlatform, '#5c31a0'],
+                  ]}
+                  onClick={() => setActivePlatform(platform)}
+                >
+                  <Text key={platform}>{platform}</Text>
+                </Stack>
+              ))} */}
+            </Stack>
             <HighlightCode codeString={parsedCode} />
           </Stack>
         )}
