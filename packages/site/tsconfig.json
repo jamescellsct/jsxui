@@ -15,7 +15,8 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "system": ["src/system/index"]
+      "@/*": ["src/*"],
+      "system": ["src/system/build/index"]
     },
     "incremental": true
   },

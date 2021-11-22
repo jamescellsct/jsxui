@@ -4,6 +4,10 @@ import get from 'dlv'
 import { theme } from '../theme'
 
 export type StackProps = {
+  // column?: number | [columnStart: number, columnEnd: number]
+  // row?: number | [rowStart: number, rowEnd: number]
+  column?: string
+  row?: string
   axis?: 'x' | 'y'
   width?: number | any
   height?: number | any
@@ -35,25 +39,25 @@ const getValue = (value, key) => {
 export const Stack = createComponent<StackProps>({
   name: 'Stack',
   transforms: {
+    column: (value) => ({
+      gridColumn: value,
+      // TODO: look into supporting object/array values?
+      // gridColumn: Array.isArray(value) ? value.join(' / ') : value,
+    }),
+    row: (value) => ({
+      gridRow: value,
+    }),
     axis: (value) => ({
       flexDirection: value === 'x' ? 'row' : 'column',
     }),
     width: (value) =>
       typeof value === 'string' && value.includes('fr')
-        ? {
-            flex: `${value.slice(0, -2)} ${value.slice(0, -2)} 0`,
-          }
-        : {
-            width: getValue(value, 'boxSpacings'),
-          },
+        ? { flex: `${value.slice(0, -2)} ${value.slice(0, -2)} 0` }
+        : { width: getValue(value, 'boxSizes') },
     height: (value) =>
       typeof value === 'string' && value.includes('fr')
-        ? {
-            flex: `${value.slice(0, -2)} ${value.slice(0, -2)} 0`,
-          }
-        : {
-            height: getValue(value, 'boxSpacings'),
-          },
+        ? { flex: `${value.slice(0, -2)} ${value.slice(0, -2)} 0` }
+        : { height: getValue(value, 'boxSizes') },
     space: (value) => ({
       padding: getValue(value, 'boxSpacings'),
     }),

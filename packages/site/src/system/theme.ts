@@ -12,6 +12,7 @@ export const theme = {
     foregroundSecondary: 'rgba(255, 255, 255, 0.8)',
     surface: '#f3efff',
     surfaceDark: '#282a36',
+    shadow: '#3d157d',
   },
   fontSizes: {
     small: {
@@ -61,6 +62,13 @@ export const theme = {
     xxlarge: '80px',
   },
   boxSizes: {
+    xxsmall: '4px',
+    xsmall: '8px',
+    small: '16px',
+    medium: '24px',
+    large: '40px',
+    xlarge: '60px',
+    xxlarge: '80px',
     container: {
       small: '640px',
       medium: '960px',

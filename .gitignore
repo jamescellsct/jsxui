@@ -25,3 +25,6 @@ out
 .env
 coverage
 dist
+
+# Contentlayer
+.contentlayer

@@ -1,0 +1,38 @@
+# Animation
+
+Animations are cross-platform require a unified API. We've chosen to use something similar to Reanimated in order to provide a nice API that can utilize worker-style animations like the Web Animation API.
+
+useAnimatedValue
+
+useDerivedValue
+
+## Animating components
+
+Components should animate performantly. In most cases, you will use the `useAnimatedValue` hook to animate values.
+
+Let's look at a simple example:
+
+```tsx
+import * as React from 'react'
+import { useAnimatedValue } from 'system'
+
+function Example() {
+  const value = useAnimatedValue(0)
+  return <Text>{value}</Text>
+}
+```
+
+```tsx
+import * as React from 'react'
+import { useAnimatedValue, useDerivedValue } from 'system'
+
+function Example() {
+  const x = useAnimatedValue(0)
+  const y = useDerivedValue(x, (x) => x + 1)
+  return (
+    <Text x={x} y={y}>
+      {value}
+    </Text>
+  )
+}
+```

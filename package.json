@@ -10,6 +10,7 @@
     "clean": "rimraf node_modules && rimraf */**/node_modules && rimraf */**/dist && rimraf */**/.jsxui",
     "babel": "yarn workspace @jsxui/babel-plugin",
     "cli": "yarn workspace @jsxui/cli",
+    "docs": "yarn workspace docs",
     "editor": "yarn workspace @jsxui/editor",
     "react": "yarn workspace @jsxui/react",
     "site": "yarn workspace site"

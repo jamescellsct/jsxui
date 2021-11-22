@@ -20,9 +20,7 @@ export const Text = createComponent<TextProps>({
     color: 'foreground',
   },
   transforms: {
-    width: (value) => ({
-      width: theme.lineLengths[value] || value,
-    }),
+    width: (value) => ({ width: theme.lineLengths[value] || value }),
     italic: (value) => (value ? { fontStyle: 'italic' } : undefined),
     size: (value) => {
       const systemFontSize = theme.fontSizes[value]
@@ -40,20 +38,13 @@ export const Text = createComponent<TextProps>({
           : value,
       }
     },
-    alignment: (value) => ({
-      textAlign: value,
-    }),
-    opacity: (value) => ({
-      opacity: value,
-    }),
-    shadow: (value) => ({
-      filter: value,
-    }),
-    color: (value) => ({
-      color: theme.colors[value] || value,
-    }),
+    alignment: (value) => ({ textAlign: value }),
+    opacity: (value) => ({ opacity: value }),
+    shadow: (value) => ({ filter: value }),
+    color: (value) => ({ color: theme.colors[value] || value }),
   },
   variants: {
+    // shadow: (theme) => `drop-shadow(-1px 5px ${theme.colors.shadow}) drop-shadow(-1px 4px ${theme.colors.shadow}) drop-shadow(-1px 3px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 1px ${theme.colors.shadow})`,
     heading1: {
       defaults: {
         textTransform: 'uppercase',
@@ -61,7 +52,7 @@ export const Text = createComponent<TextProps>({
         italic: true,
         size: 'xlarge',
         weight: 'black',
-        shadow: `drop-shadow(-1px 5px #3d157d) drop-shadow(-1px 4px #3d157d) drop-shadow(-1px 3px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 1px #3d157d)`,
+        // shadow: 'shadow',
       },
       web: {
         as: 'h1',

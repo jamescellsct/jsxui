@@ -115,9 +115,8 @@ export type StackOwnProps = {
   children?: React.ReactNode
 } & SharedProps
 
-export type StackProps<
-  T extends React.ElementType = typeof defaultElement
-> = PolymorphicPropsWithRef<StackOwnProps, T>
+export type StackProps<T extends React.ElementType = typeof defaultElement> =
+  PolymorphicPropsWithRef<StackOwnProps, T>
 
 function joinChildren(children, separator: any = ', ') {
   const childrenArray = React.Children.toArray(children)
@@ -262,8 +261,9 @@ export const Stack: PolymorphicForwardRefExoticComponent<
       flexDirection: isHorizontal ? 'row' : 'column',
       boxShadow:
         strokeWeight ?? strokeColor
-          ? `inset 0px 0px 0px ${strokeWeight}px ${colors[strokeColor] ||
-              strokeColor}`
+          ? `inset 0px 0px 0px ${strokeWeight}px ${
+              colors[strokeColor] || strokeColor
+            }`
           : undefined,
       borderRadius: [
         parseValue(radiusTopLeft ?? radius),

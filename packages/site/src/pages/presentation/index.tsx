@@ -7,11 +7,11 @@ import { AnimateSharedLayout, motion } from 'framer-motion'
 import {
   ActiveSlideContext,
   useActiveSlide,
-} from '../components/ActiveSlideContext'
-import { InOut } from '../components/InOut'
-import { useSlideStepper } from '../hooks/use-slide-stepper'
+} from '@/components/ActiveSlideContext'
+import { InOut } from '@/components/InOut'
+import { useSlideStepper } from '@/hooks/use-slide-stepper'
 
-import avatarSource from '../assets/avatar.jpeg'
+import avatarSource from '@/assets/avatar.jpeg'
 
 // TODO: allow augmenting theme per file?
 // export const theme = {
@@ -281,6 +281,28 @@ function DesignHandoff() {
               key="design-handoff-linear"
               width="60vw"
             >
+              {/* <Layer
+                name="discipline-1"
+                opacity={[
+                  ['default', 0],
+                  [activeIndex >= 1, 1],
+                ]}
+                transition={{
+                  type: 'spring',
+                  duration: 200,
+                }}
+              /> */}
+              {/* <Layer
+                name="discipline-1"
+                opacity={{
+                  default: 0
+                  [activeIndex >= 1, 1],
+                }}
+                transition={{
+                  type: 'spring',
+                  duration: 200,
+                }}
+              /> */}
               <Layer
                 name="discipline-1"
                 layoutId="discipline-1"
@@ -331,11 +353,11 @@ function DesignHandoff() {
 }
 
 // @ts-ignore
-import staticAnalysisCodeString from '!!raw-loader!../code-strings/static-analysis'
+import staticAnalysisCodeString from '!!raw-loader!@/code-strings/static-analysis'
 import { parse } from '@babel/parser'
 import { ObjectInspector } from 'react-inspector'
 import clean from 'clean-object'
-import { theme } from '../utils/object-inspector-theme'
+import { theme } from '@/utils/object-inspector-theme'
 import nightOwlTheme from 'prism-react-renderer/themes/nightOwl'
 
 function getAst(code) {
@@ -379,8 +401,8 @@ function Compilers() {
   )
 }
 
-import { SyntaxHighlighter } from '../components/SyntaxHighlighter'
-import { getTree, renderTree } from '../utils/get-tree'
+import { SyntaxHighlighter } from '@/components/SyntaxHighlighter'
+import { getTree, renderTree } from '@/utils/get-tree'
 
 const initialActiveLayerState = {
   id: null,
@@ -500,8 +522,8 @@ function StaticAnalysis() {
 }
 
 // @ts-ignore
-import stylePropsCodeString from '!!raw-loader!../code-strings/style-props'
-import { LargeSyntaxHighlighter } from '../components/LargeSyntaxHighlighter'
+import stylePropsCodeString from '!!raw-loader!@/code-strings/style-props'
+import { LargeSyntaxHighlighter } from '@/components/LargeSyntaxHighlighter'
 
 function StyleProps() {
   return (
@@ -526,7 +548,7 @@ function StyleProps() {
 }
 
 // @ts-ignore
-import compilerComponentsCodeString from '!!raw-loader!../code-strings/compiler-components'
+import compilerComponentsCodeString from '!!raw-loader!@/code-strings/compiler-components'
 
 function CompilerComponents() {
   const { activeIndex } = useSlideStepper({ maxIndex: 7 })
