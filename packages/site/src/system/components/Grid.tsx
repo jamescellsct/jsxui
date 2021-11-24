@@ -5,7 +5,9 @@ import { theme } from '../theme'
 
 export type GridProps = {
   column?: number
+  columnSpan?: number
   row?: number
+  rowSpan?: number
   columns: number
   rows: number
   width?: number | string
@@ -24,11 +26,22 @@ const getValue = (value, key) => {
 export const Grid = createComponent<GridProps>({
   name: 'Grid',
   transforms: {
+    // Context provided from the compiler will be passed to the component
+    // if it can be compiled further down it will, otherwise we use the pragma.
+    // column: (context) => (value) => ({
+    //   gridColumn: value, // context.Grid. autocomplete since we know the whole Design Graph?
+    // }),
     column: (value) => ({
       gridColumn: value,
     }),
+    columnSpan: (value) => ({
+      gridColumnEnd: `span ${value}`,
+    }),
     row: (value) => ({
       gridRow: value,
+    }),
+    rowSpan: (value) => ({
+      gridRowEnd: `span ${value}`,
     }),
     columns: (value) => ({
       gridTemplateColumns: `repeat(${value}, minmax(0, 1fr))`,

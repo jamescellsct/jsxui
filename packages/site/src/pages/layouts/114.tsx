@@ -7,7 +7,7 @@ export default function Layout({ children }) {
       height="100vh"
       columns={5}
       rows={3}
-      space={32}
+      space={16}
       spaceBetweenY={16}
     >
       <Stack column="1" row="1" background="white" />

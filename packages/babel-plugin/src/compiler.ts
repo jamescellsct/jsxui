@@ -4,6 +4,7 @@ import * as t from '@babel/types'
 import jsx from '@babel/plugin-syntax-jsx'
 import get from 'dlv'
 
+import { addSourceProps } from './add-source-props'
 import { filterDuplicates } from './utils'
 
 type PluginOptions = {
@@ -69,7 +70,6 @@ export default function (_, state): PluginObj<PluginOptions> {
   const components = Object.entries(rawComponents)
     .filter(([key]) => key !== 'default')
     .map(([, component]) => {
-      console.log(component.displayName, component.config)
       const { platforms, ...componentConfig } = component.config
       const platformConfig = platforms[platform]
       return {
@@ -89,7 +89,7 @@ export default function (_, state): PluginObj<PluginOptions> {
         },
       }
     })
-  let componentEntries
+  let componentEntries, cache
   return {
     name: '@jsxui/babel-plugin',
     inherits: jsx,
@@ -101,6 +101,7 @@ export default function (_, state): PluginObj<PluginOptions> {
       Program: {
         enter() {
           componentEntries = {}
+          cache = new Set()
         },
         exit(path) {
           const importDeclarations = {}
@@ -193,7 +194,10 @@ export default function (_, state): PluginObj<PluginOptions> {
           }
         },
       },
-      JSXElement(path) {
+      // JSXOpeningElement(path, state) {
+      //   addSourceProps(path, state, cache)
+      // },
+      JSXElement(path, state) {
         const component = components.find(
           (component) => path.node.openingElement.name.name === component.name
         )
@@ -211,11 +215,15 @@ export default function (_, state): PluginObj<PluginOptions> {
           const breakpointEntries: Array<[string, any]> = []
           const transformEntries: Array<[string, any]> = []
           const attributes: Array<t.JSXAttribute> = []
+          const meta = {
+            theme,
+            filePath: state.filename,
+          }
 
           const pushKeyValueProp = (key, value) => {
             const transform = component.transforms[key]
             if (transform !== undefined) {
-              const transformedValue = transform(value, theme)
+              const transformedValue = transform(value, meta)
               if (typeof transformedValue === 'object') {
                 Object.entries(transformedValue).forEach(([key, value]) => {
                   defaultEntries.push([key, getValueType(value)])
@@ -279,17 +287,23 @@ export default function (_, state): PluginObj<PluginOptions> {
             // <Text variant="heading1" />
             if (attribute.name.name === 'variant') {
               const variant = component.variants[attribute.value.value]
-              const platformVariant = variant[platform]
 
-              // TODO: process rest of platform variant attributes and run them through transforms
-              path.node.openingElement.name.name = platformVariant.as
-              if (path.node.closingElement) {
-                path.node.closingElement.name.name = platformVariant.as
+              if (variant) {
+                const platformVariant = variant[platform]
+
+                // TODO: process rest of platform variant attributes and run them through transforms
+                path.node.openingElement.name.name = platformVariant.as
+                if (path.node.closingElement) {
+                  path.node.closingElement.name.name = platformVariant.as
+                }
+
+                // Apply default variant props for all platforms
+                if (variant.defaults) {
+                  Object.entries(variant.defaults).forEach(([key, value]) => {
+                    pushKeyValueProp(key, value)
+                  })
+                }
               }
-
-              Object.entries(variant.defaults).forEach(([key, value]) => {
-                pushKeyValueProp(key, value)
-              })
             }
 
             /**
@@ -305,7 +319,7 @@ export default function (_, state): PluginObj<PluginOptions> {
                 if (expression.type === 'ArrayExpression') {
                   expression.elements.forEach((nestedExpression) => {
                     const [variant, value] = nestedExpression.elements
-                    const transformedValue = transform(value.value, theme)
+                    const transformedValue = transform(value.value, meta)
                     const variantName =
                       variant.type === 'StringLiteral' && variant.value
                     if (variantName && variantName.includes('breakpoints')) {
@@ -321,7 +335,7 @@ export default function (_, state): PluginObj<PluginOptions> {
                           breakpointEntries.push([breakpoint, [propEntry]])
                         }
                       }
-                      const transformedValue = transform(getValue(value), theme)
+                      const transformedValue = transform(getValue(value), meta)
 
                       if (typeof transformedValue === 'object') {
                         Object.entries(transformedValue).forEach(
@@ -336,7 +350,7 @@ export default function (_, state): PluginObj<PluginOptions> {
                         )
                       }
                     } else if (variantName === 'default') {
-                      const transformedValue = transform(getValue(value), theme)
+                      const transformedValue = transform(getValue(value), meta)
                       if (typeof transformedValue === 'object') {
                         Object.entries(transformedValue).forEach(
                           ([key, value]) => {
@@ -373,7 +387,7 @@ export default function (_, state): PluginObj<PluginOptions> {
                   if (expression.value) {
                     const transformedValue = transform(
                       getValue(expression.value),
-                      theme
+                      meta
                     )
                     if (typeof transformedValue === 'object') {
                       Object.entries(transformedValue).forEach(
@@ -402,7 +416,7 @@ export default function (_, state): PluginObj<PluginOptions> {
                   }
                 }
               } else {
-                const transformedValue = transform(attribute.value.value, theme)
+                const transformedValue = transform(attribute.value.value, meta)
 
                 // TODO: how to handle if prop value itself is an object? (e.g. translate={{ x: -5, y: 10 }} )
                 // Can we use types to determine or should we only support simple

@@ -1,6 +1,10 @@
 import { Grid, Stack, Spacer } from 'system'
 
-export default function Layout({ children }) {
+function Feature({ column, row }) {
+  return <Stack column={column} row={row} stroke="rgba(255,255,255,0.5)" />
+}
+
+export default function Layout() {
   return (
     <Grid
       width="100%"
@@ -20,12 +24,12 @@ export default function Layout({ children }) {
         </Stack>
         <Spacer />
       </Stack>
-      <Stack column="1" row="3" background="rgba(255,255,255,0.5)" />
-      <Stack column="2" row="3" background="rgba(255,255,255,0.5)" />
-      <Stack column="3" row="3" background="rgba(255,255,255,0.5)" />
-      <Stack column="1" row="4" background="rgba(255,255,255,0.5)" />
-      <Stack column="2" row="4" background="rgba(255,255,255,0.5)" />
-      <Stack column="3" row="4" background="rgba(255,255,255,0.5)" />
+      <Feature column="1" row="3" />
+      <Feature column="2" row="3" />
+      <Feature column="3" row="3" />
+      <Feature column="1" row="4" />
+      <Feature column="2" row="4" />
+      <Feature column="3" row="4" />
     </Grid>
   )
 }

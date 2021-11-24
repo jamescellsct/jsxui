@@ -44,7 +44,6 @@ export const Text = createComponent<TextProps>({
     color: (value) => ({ color: theme.colors[value] || value }),
   },
   variants: {
-    // shadow: (theme) => `drop-shadow(-1px 5px ${theme.colors.shadow}) drop-shadow(-1px 4px ${theme.colors.shadow}) drop-shadow(-1px 3px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 1px ${theme.colors.shadow})`,
     heading1: {
       defaults: {
         textTransform: 'uppercase',
@@ -52,7 +51,7 @@ export const Text = createComponent<TextProps>({
         italic: true,
         size: 'xlarge',
         weight: 'black',
-        // shadow: 'shadow',
+        shadow: `drop-shadow(-1px 3px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 1px #3d157d) drop-shadow(-1px 1px #3d157d)`,
       },
       web: {
         as: 'h1',

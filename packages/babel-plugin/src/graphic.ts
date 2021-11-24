@@ -6,7 +6,13 @@ import { createSyncFn } from 'synckit'
 
 import { filterDuplicates } from './utils'
 
-const fetchImages = createSyncFn(require.resolve('./fetch-images'))
+let fetchImages
+
+try {
+  fetchImages = createSyncFn(require.resolve('./fetch-images'))
+} catch (error) {
+  console.log(error)
+}
 
 // TODO: were doing a lot of traversing here, look into doing it a more performant way
 export default function (): PluginObj<PluginPass> {

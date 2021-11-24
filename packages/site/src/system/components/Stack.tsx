@@ -4,10 +4,10 @@ import get from 'dlv'
 import { theme } from '../theme'
 
 export type StackProps = {
-  // column?: number | [columnStart: number, columnEnd: number]
-  // row?: number | [rowStart: number, rowEnd: number]
-  column?: string
-  row?: string
+  column?: number
+  columnSpan?: number
+  row?: number
+  rowSpan?: number
   axis?: 'x' | 'y'
   width?: number | any
   height?: number | any
@@ -41,11 +41,15 @@ export const Stack = createComponent<StackProps>({
   transforms: {
     column: (value) => ({
       gridColumn: value,
-      // TODO: look into supporting object/array values?
-      // gridColumn: Array.isArray(value) ? value.join(' / ') : value,
+    }),
+    columnSpan: (value) => ({
+      gridColumnEnd: `span ${value}`,
     }),
     row: (value) => ({
       gridRow: value,
+    }),
+    rowSpan: (value) => ({
+      gridRowEnd: `span ${value}`,
     }),
     axis: (value) => ({
       flexDirection: value === 'x' ? 'row' : 'column',
@@ -83,6 +87,9 @@ export const Stack = createComponent<StackProps>({
     }),
     spaceBetween: (value) => ({
       gap: getValue(value, 'boxSpacings'),
+    }),
+    stroke: (value) => ({
+      boxShadow: `0px 0px 0px 1px ${theme.colors[value] || value}`,
     }),
     cornerRadius: (value) => ({
       borderRadius: value,
