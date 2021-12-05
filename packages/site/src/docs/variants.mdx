@@ -1,3 +1,34 @@
 # Variants
 
 Each component has a set of props that controls the behavior of the component. Variants are the reusuable configurations of props that can be used to create different implementations of components.
+
+```jsx
+<Circle
+  radius={[
+    ['initial', 20],
+    ['press', 10],
+  ]}
+/>
+```
+
+```jsx
+<Circle radius={[20, ['press', 10]]} />
+```
+
+Initial states are the default values for the component:
+
+```jsx
+<Circle radius={20} />
+```
+
+Use variants to create different states of a component:
+
+```jsx
+<Circle radius={{ initial: 20, press: 10 }} />
+```
+
+Or with keyframes:
+
+```jsx
+<Circle radius={[20, 10]} />
+```

@@ -1,0 +1,24 @@
+# Draggable
+
+Drag and drop is essential for many applications. It offers a way to move an object from one place to another. This is done by dragging the object with the pointer and releasing it at the new location. This is a feature seen in many operating system applications, such as the Finder, Safari, and many other applications.
+
+In simple usecases, you can use the draggable() method to make an element draggable.
+
+```jsx
+<Circle draggable />
+```
+
+In more complex cases, you can use the `useDraggable` and `useDroppable` helpers to make an element draggable and droppable.
+
+```jsx
+import { useDroppable } from 'jsxui'
+
+function App() {
+  const [drag, drop] = useDroppable()
+  return (
+    <Stack onDrop={(id) => console.log(`${id} dropped`)}>
+      <Circle id="circle" draggable />
+    </Stack>
+  )
+}
+```

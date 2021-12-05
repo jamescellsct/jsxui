@@ -36,3 +36,53 @@ function Example() {
   )
 }
 ```
+
+## Layout Animation
+
+```jsx
+<Stack
+  opacity={[
+    ['default', 0],
+    ['enter', 1],
+    ['exit', 0],
+  ]}
+  transition={{
+    duration: 0.5,
+    ease: 'easeInOut',
+  }}
+>
+  <Text>Hello World</Text>
+</Stack>
+```
+
+```jsx
+<Stack
+  opacity={[
+    ['default', 0],
+    ['enter', { value: 1, delay: 0.5 }],
+    ['exit', { value: 0, delay: 0.5 }],
+  ]}
+>
+  <Text>Hello World</Text>
+</Stack>
+```
+
+```jsx
+<Stack
+  opacity={{
+    default: 0,
+    enter: {
+      type: 'timing',
+      value: 1,
+      duration: 300,
+    },
+    exit: {
+      type: 'spring',
+      value: 0,
+      duration: 300,
+    },
+  }}
+>
+  <Text>Hello World</Text>
+</Stack>
+```

@@ -1,0 +1,32 @@
+# Selectable
+
+In applications it's common to have a list of items that can be selected. This is seen in almost any CRUD application.
+
+```jsx
+function Item({ children, value, selected }) {
+  return (
+    <Stack
+      selectable
+      value={value}
+      background={['base', [selected, 'primary']]}
+    >
+      <Text>{children}</Text>
+    </Stack>
+  )
+}
+
+function App() {
+  const [selected, setSelected] = useState(null)
+
+  return (
+    <Stack onSelect={(value) => setSelected(value)}>
+      <Text>{selected}</Text>
+      <Item value="1">Item 1</Item>
+      <Item value="2">Item 2</Item>
+      <Item value="3">Item 3</Item>
+    </Stack>
+  )
+}
+```
+
+Because we use a `Text` component we can also search the list for the selected item using the keyboard. This is similar to how HTML `<select>` elements work.

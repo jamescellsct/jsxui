@@ -32,6 +32,18 @@ const components = {
   p: ({ children }) => (
     <p css={{ fontSize: 20, lineHeight: 1.4, margin: 0 }}>{children}</p>
   ),
+  pre: ({ children }) => (
+    <pre
+      css={{
+        padding: 16,
+        margin: 0,
+        borderRadius: 8,
+        backgroundColor: 'rgb(37, 39, 54)',
+      }}
+    >
+      {children}
+    </pre>
+  ),
 }
 
 export default function MDXLayout({ allDocs, doc }) {
