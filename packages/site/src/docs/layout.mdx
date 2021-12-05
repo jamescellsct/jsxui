@@ -61,3 +61,34 @@ function App() {
   )
 }
 ```
+
+## Guides
+
+### Calendar
+
+```jsx
+// https://dribbble.com/shots/14750803-Paligo-Elements/attachments/6453967?mode=media
+function CalendarApp() {
+  return (
+    <Grid columns={daysInView}>
+      {/* Create columns of days */}
+      {days.map(({ dayOfWeek, date, selected }, index) => (
+        <Column column={index} background={[selected, 'blue']}>
+          <Text>{date}</Text>
+          <Text>{dayOfWeek}</Text>
+        </Column>
+      ))}
+
+      {/* Place events along those days */}
+      {events.map(({ title, description, start, end, color }) => (
+        <Row column={[start, end]} background={color}>
+          <Text fontSize={16} fontWeight={500}>
+            {title}
+          </Text>
+          <Text fontSize={12}>{description}</Text>
+        </Row>
+      ))}
+    </Grid>
+  )
+}
+```

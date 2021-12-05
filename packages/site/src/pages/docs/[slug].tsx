@@ -50,14 +50,14 @@ export default function MDXLayout({ allDocs, doc }) {
   const Component = React.useMemo(() => getMDXComponent(doc.mdx), [doc.mdx])
   return (
     <Layout>
-      <Stack width={320}>
+      <Stack width={160}>
         {allDocs.map(({ slug, name }) => (
           <Link href={slug} passHref>
             <Stack as="a" css={{ textDecoration: 'none' }}>
               <Spacer size={4} />
               <Stack axis="x">
                 <Spacer size={16} />
-                <Text variant="body2">{name}</Text>
+                <Text css={{ fontSize: 16 }}>{name}</Text>
                 <Spacer size={16} />
               </Stack>
               <Spacer size={4} />
