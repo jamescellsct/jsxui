@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { createComponent } from '@jsxui/babel-plugin/dist/create-component'
-import { theme } from '../theme'
 
 export type TextProps = {
   width?: string
@@ -20,9 +19,9 @@ export const Text = createComponent<TextProps>({
     color: 'foreground',
   },
   transforms: {
-    width: (value) => ({ width: theme.lineLengths[value] || value }),
+    width: (value, { theme }) => ({ width: theme.lineLengths[value] || value }),
     italic: (value) => (value ? { fontStyle: 'italic' } : undefined),
-    size: (value) => {
+    size: (value, { theme }) => {
       const systemFontSize = theme.fontSizes[value]
       return {
         fontSize: systemFontSize
@@ -30,7 +29,7 @@ export const Text = createComponent<TextProps>({
           : value,
       }
     },
-    weight: (value) => {
+    weight: (value, { theme }) => {
       const systemFontWeight = theme.fontWeights[value]
       return {
         fontWeight: systemFontWeight
@@ -41,7 +40,7 @@ export const Text = createComponent<TextProps>({
     alignment: (value) => ({ textAlign: value }),
     opacity: (value) => ({ opacity: value }),
     shadow: (value) => ({ filter: value }),
-    color: (value) => ({ color: theme.colors[value] || value }),
+    color: (value, { theme }) => ({ color: theme.colors[value] || value }),
   },
   variants: {
     heading1: {
@@ -94,6 +93,7 @@ export const Text = createComponent<TextProps>({
     body1: {
       defaults: {
         size: 'medium',
+        color: 'foreground',
         letterSpacing: 0.8,
       },
       web: {

@@ -28,18 +28,18 @@ export const theme = {
       'breakpoints.medium': 28,
     },
     xlarge: {
-      default: 128,
+      default: 60,
       'breakpoints.medium': 96,
+    },
+    xxlarge: {
+      default: 128,
+      'breakpoints.medium': 112,
     },
   },
   fontWeights: {
     medium: 400,
     bold: 700,
     black: 900,
-    // bold: {
-    //   default: 500,
-    //   'mode.dark': 600,
-    // },
   },
   lineLengths: {
     narrow: '14ch',
@@ -82,3 +82,72 @@ export const theme = {
     },
   },
 } as const
+
+export type Theme = typeof theme
+
+const baseTheme = {
+  colors: {
+    brand: '#8D6CEE',
+    brandTint: '#7B5AD9',
+    brandShade: '#342054',
+    // foreground: {
+    //   default: 'white',
+    //   dark: '#1D1D1D',
+    // },
+    foreground: 'white',
+    foregroundSecondary: 'rgba(255, 255, 255, 0.8)',
+    surface: '#f3efff',
+    surfaceDark: '#282a36',
+    shadow: '#3d157d',
+  },
+  fontSizes: {
+    small: {
+      default: 32,
+      'breakpoints.medium': 12,
+      'mode.presentation.default': 32,
+    },
+    medium: {
+      default: 48,
+      'breakpoints.medium': 16,
+    },
+    large: {
+      default: 72,
+      'breakpoints.medium': 28,
+    },
+    xlarge: {
+      default: 128,
+      'breakpoints.medium': 96,
+    },
+  },
+  fontWeights: {
+    medium: 400,
+    bold: 700,
+    black: 900,
+    // bold: {
+    //   default: 500,
+    //   'mode.dark': 600,
+    // },
+  },
+}
+
+const presentationTheme = {
+  fontSizes: {
+    small: {
+      default: 32,
+      'breakpoints.medium': 12,
+      'mode.presentation.default': 32,
+    },
+    medium: {
+      default: 48,
+      'breakpoints.medium': 16,
+    },
+    large: {
+      default: 72,
+      'breakpoints.medium': 28,
+    },
+    xlarge: {
+      default: 128,
+      'breakpoints.medium': 96,
+    },
+  },
+}

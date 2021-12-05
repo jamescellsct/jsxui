@@ -106,6 +106,10 @@ export default function (_, state): PluginObj<PluginOptions> {
         exit(path) {
           const importDeclarations = {}
 
+          /**
+           * Collect `as` prop dependencies for each platform.
+           * For example, if `View` needs to be imported for react-native.
+           */
           components.forEach((component) => {
             if (component.source) {
               const importDeclaration = importDeclarations[component.source]

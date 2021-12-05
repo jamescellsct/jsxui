@@ -3,10 +3,11 @@
 exports[`@jsxui/babel-plugin 1. @jsxui/babel-plugin: 1. @jsxui/babel-plugin 1`] = `
 
 import { Stack, Text } from 'system'
+import { motion } from 'framer-motion'
 
 export default function App() {
   return (
-    <Stack variant="dev">
+    <Stack as={motion.div} initial={{ x: 0 }} animate={{ x: 100 }}>
       <Text>Hello World</Text>
     </Stack>
   )
@@ -14,39 +15,35 @@ export default function App() {
 
       ↓ ↓ ↓ ↓ ↓ ↓
 
-var _jsxuiFileName =
-  '/Users/travisarnold/Code/jsxui/packages/babel-plugin/src/__fixtures__/events.js'
 import { Stack, Text } from 'system'
+import { motion } from 'framer-motion'
 export default function App() {
   return (
-    <div
+    <Stack
+      as={motion.div}
+      initial={{
+        x: 0,
+      }}
+      animate={{
+        x: 100,
+      }}
       css={{
         display: 'flex',
         flexDirection: 'column',
         flexShrink: 0,
       }}
-      __jsxuiSource={{
-        fileName: _jsxuiFileName,
-        lineNumber: 5,
-        columnNumber: 5,
-      }}
     >
-      <span
+      <Text
         css={{
           whiteSpace: 'pre-wrap',
           margin: 0,
           cursor: 'default',
           color: 'white',
         }}
-        __jsxuiSource={{
-          fileName: _jsxuiFileName,
-          lineNumber: 6,
-          columnNumber: 7,
-        }}
       >
         Hello World
-      </span>
-    </div>
+      </Text>
+    </Stack>
   )
 }
 

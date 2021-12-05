@@ -5,11 +5,33 @@ import { Layout } from '@/components/Layout'
 import { getAllDocs } from '@/utils/get-all-docs'
 import { Spacer, Stack, Text } from 'system'
 
+// const components = {
+//   h1: ({ children }) => <Text variant="heading1">{children}</Text>,
+//   h2: ({ children }) => <Text variant="heading2">{children}</Text>,
+//   h3: ({ children }) => <Text variant="heading3">{children}</Text>,
+//   p: ({ children }) => <Text variant="body1">{children}</Text>,
+// }
+
 const components = {
-  h1: ({ children }) => <Text variant="heading1">{children}</Text>,
-  h2: ({ children }) => <Text variant="heading2">{children}</Text>,
-  h3: ({ children }) => <Text variant="heading3">{children}</Text>,
-  p: ({ children }) => <Text variant="body1">{children}</Text>,
+  wrapper: ({ children }) => (
+    <div
+      css={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 24,
+        color: 'white',
+        minHeight: '100vh',
+      }}
+    >
+      {children}
+    </div>
+  ),
+  h1: ({ children }) => <h1 css={{ fontSize: 48, margin: 0 }}>{children}</h1>,
+  h2: ({ children }) => <h2 css={{ fontSize: 32, margin: 0 }}>{children}</h2>,
+  h3: ({ children }) => <h3 css={{ fontSize: 24, margin: 0 }}>{children}</h3>,
+  p: ({ children }) => (
+    <p css={{ fontSize: 20, lineHeight: 1.4, margin: 0 }}>{children}</p>
+  ),
 }
 
 export default function MDXLayout({ allDocs, doc }) {
@@ -32,10 +54,13 @@ export default function MDXLayout({ allDocs, doc }) {
         ))}
       </Stack>
       <Spacer size={64} />
-      <Stack width={[['breakpoints.medium', 'container.medium']]}>
+      {/* <Stack width={[['breakpoints.medium', 'container.medium']]}>
+        <Component components={components} />
+      </Stack> */}
+      <Stack width="1fr">
         <Component components={components} />
       </Stack>
-      <Spacer />
+      <Spacer size={64} />
     </Layout>
   )
 }

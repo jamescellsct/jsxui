@@ -24,7 +24,8 @@
   },
   "peerDependencies": {
     "@babel/plugin-syntax-jsx": ">=7.0.0",
-    "@babel/types": ">=7.0.0"
+    "@babel/types": ">=7.0.0",
+    "react": ">=16.0.0"
   },
   "devDependencies": {
     "@babel/plugin-syntax-jsx": "^7.14.5",
