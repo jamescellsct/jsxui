@@ -22,7 +22,7 @@
     "isomorphic"
   ],
   "scripts": {
-    "develop": "node build.js --watch",
+    "dev": "node build.js --watch",
     "build": "node build.js"
   },
   "husky": {
