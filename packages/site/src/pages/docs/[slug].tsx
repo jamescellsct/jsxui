@@ -71,6 +71,7 @@ export default function MDXLayout({ allDocs, doc }) {
       </Stack> */}
       <Stack width="1fr">
         <Component components={components} />
+        <Spacer size={64} />
       </Stack>
       <Spacer size={64} />
     </Layout>

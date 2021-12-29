@@ -6,7 +6,7 @@
     "assets": "node scripts/assets.js",
     "dev": "next dev",
     "build": "next build && next export",
-    "system": "jsxui system/src system/build"
+    "system": "jsxui build"
   },
   "dependencies": {
     "@babel/standalone": "^7.16.4",

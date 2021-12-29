@@ -5,7 +5,7 @@ import { Spacer, Stack } from 'system'
 export function Header() {
   return (
     <Stack>
-      <Spacer size={16} />
+      <Spacer size={64} />
       <Stack axis="x">
         <Spacer size={16} />
         <Graphic name="logo" />

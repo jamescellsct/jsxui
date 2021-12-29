@@ -1,14 +1,15 @@
 # Layout
 
-Layout in user interface design is how items are arranged throughout screens. JSXUI ships with a few base layout components:
+Layout components manage how elements are arranged throughout an interface. JSXUI ships with the following layout components:
 
 - Grid
 - Column
 - Row
+- Space
 
 ## Grid
 
-Grid is a layout component that arranges its children in a grid. You can define the number of columns and rows in the grid. If left unspecified, the grid will use the number of columns and rows defined in the parent container. If no parent Grid is found, the grid will use the number of columns and rows defined in the JSXUI.
+Grid arranges immediate children along predefined columns and rows.
 
 ```jsx
 function App() {
@@ -26,7 +27,7 @@ function App() {
 
 ## Column
 
-The `Column` component arranges its children in the specified `Grid` column.
+The `Column` component arranges immediate children along the vertical axis.
 
 ```jsx
 function App() {
@@ -45,7 +46,7 @@ function App() {
 
 ## Row
 
-The `Row` component arranges its children in the specified `Grid` row.
+The `Row` component arranges immediate children along the horizontal axis.
 
 ```jsx
 function App() {
@@ -55,6 +56,24 @@ function App() {
         <Text>Hello</Text>
       </Row>
       <Row>
+        <Text>World</Text>
+      </Row>
+    </Grid>
+  )
+}
+```
+
+## Space
+
+The `Space` component defines the space between children along the horizontal or vertical axis.
+
+```jsx
+function App() {
+  return (
+    <Grid>
+      <Row>
+        <Text>Hello</Text>
+        <Space />
         <Text>World</Text>
       </Row>
     </Grid>
