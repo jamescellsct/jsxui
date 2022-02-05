@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "scripts": {
     "assets": "node scripts/assets.js",
-    "develop": "next dev",
+    "dev": "next dev",
     "build": "next build && next export",
     "system": "jsxui system/src system/build"
   },

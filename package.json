@@ -5,8 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "lerna run build --parallel --include-dependencies",
-    "develop": "lerna run develop --parallel --include-dependencies",
+    "build": "turbo run build",
+    "dev": "turbo run dev",
     "clean": "rimraf node_modules && rimraf */**/node_modules && rimraf */**/dist && rimraf */**/.jsxui",
     "babel": "yarn workspace @jsxui/babel-plugin",
     "cli": "yarn workspace @jsxui/cli",
@@ -27,10 +27,10 @@
     "esbuild": "^0.12.25",
     "husky": "^7.0.2",
     "jest": "^27.1.0",
-    "lerna": "^4.0.0",
     "npm-dts": "^1.3.10",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
+    "turbo": "^1.1.2",
     "typescript": "^4.4.2"
   },
   "prettier": {
@@ -39,5 +39,6 @@
     "semi": false,
     "singleQuote": true,
     "trailingComma": "es5"
-  }
+  },
+  "packageManager": "yarn@1.22.17"
 }

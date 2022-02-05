@@ -20,6 +20,9 @@ yarn-error.log*
 .next
 out
 
+# Turborepo
+.turbo
+
 # General
 *.log
 .env
