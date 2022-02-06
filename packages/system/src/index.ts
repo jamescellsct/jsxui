@@ -1,120 +1,12 @@
-import createSort from 'sort-css-media-queries/lib/create-sort'
-
-// TODO: look into supporting level 4 syntax and sorting
-// https://developer.mozilla.org/en-US/docs/Web/CSS/Media_Queries/Using_media_queries#syntax_improvements_in_level_4
-const sortMediaQueries = createSort()
-
-type NoInfer<T> = T extends infer S ? S : never
-
-type Transform = (value: any) => Record<string, unknown>
-
-type TransformValue<Transform extends (value: any) => Record<string, unknown>> =
-  Parameters<Transform>[0]
-
-type TransformValues<T extends Record<string, Transform>> = {
-  [K in keyof T]: TransformValue<T[K]>
-}
+import type { NoInfer, Transform, TransformValues, ComplexProps } from './types'
 
 export function createSystem<
   Theme extends Record<'mediaQueries' | string, unknown>
 >(theme: Theme) {
-  type MediaQueryAndStateValue<T, S extends string> =
-    | T
-    | ({ initial?: T } & { [K in keyof Theme['mediaQueries']]?: T } &
-        {
-          [K in S]?: T
-        })
-
-  type MediaQueryAndStateProps<T, S extends string> = {
-    [K in keyof T]: MediaQueryAndStateValue<T[K], S>
-  }
-
-  type StateValue<T, S extends string> =
-    | T
-    | ({ initial?: T } & { [K in S]?: T })
-
-  type StateProps<T, S extends string> = {
-    [K in keyof T]: StateValue<T[K], S>
-  }
-
-  function getStylePropValue(name, value, transforms) {
-    return transforms[name] ? transforms[name].call(null, value) : value
-  }
-
-  /**
-   * Takes a media query / state prop value and returns a flattened CSS prop object.
-   */
-  function flattenStyleProp<
-    Transforms extends Record<string, Transform>,
-    States extends Record<string, boolean>
-  >(
-    propName: string,
-    propValue: unknown,
-    transforms: Transforms,
-    states: States
-  ) {
-    if (typeof propValue === 'object') {
-      let parsedPropValue = null
-
-      // First, check for state prop values
-      Object.entries(propValue).forEach(([stateKey, value]) => {
-        if (stateKey === 'initial' || states[stateKey]) {
-          parsedPropValue = value
-        }
-      })
-
-      if (parsedPropValue) {
-        return Object.entries(
-          getStylePropValue(propName, propValue, transforms)
-        )
-      }
-
-      // If none were available and we made it here, return media query props
-      return Object.entries(propValue).map(([stateKey, value]) => [
-        theme.mediaQueries[stateKey] || stateKey,
-        getStylePropValue(propName, value, transforms),
-      ])
-    }
-
-    return Object.entries(getStylePropValue(propName, propValue, transforms))
-  }
-
-  /**
-   * Takes a props object containing style props and returns a CSS prop object.
-   */
-  function parseStyleProps<
-    Transforms extends Record<string, Transform>,
-    States extends Record<string, boolean>
-  >(props: Record<string, unknown>, transforms: Transforms, states: States) {
-    let styleProps = {}
-
-    for (const prop in props) {
-      const value = props[prop]
-      styleProps = {
-        ...styleProps,
-        ...Object.fromEntries(
-          flattenStyleProp(prop, value, transforms, states)
-        ),
-      }
-    }
-
-    const flattenedMediaStyles = Object.entries(styleProps).reduce(
-      (styles, [key, value]) => {
-        if (styles[key]) {
-          //@ts-ignore
-          return { ...styles, [key]: { ...styles[key], ...value } }
-        }
-        return { ...styles, [key]: value }
-      },
-      {}
-    )
-
-    return Object.fromEntries(
-      Object.entries(flattenedMediaStyles).sort((a, b) =>
-        sortMediaQueries(a[0], b[0])
-      )
-    )
-  }
+  type MediaQueryAndStateProps<Props, StateKeys extends string> = ComplexProps<
+    Props,
+    keyof Theme['mediaQueries'] | StateKeys
+  >
 
   const allVariants = new Map<
     Parameters<typeof createVariant>[0],
@@ -122,7 +14,7 @@ export function createSystem<
   >()
 
   function collectStyles() {
-    return null
+    return {}
   }
 
   function createVariant<
@@ -130,7 +22,7 @@ export function createSystem<
     Props extends TransformValues<Transforms>,
     StateKeys extends string,
     VariantKeys extends string,
-    Variant extends StateProps<{ as: string }, StateKeys> &
+    Variant extends ComplexProps<{ as: string }, StateKeys> &
       MediaQueryAndStateProps<Partial<Props>, StateKeys>
   >(config: {
     defaults?: MediaQueryAndStateProps<Partial<Props>, StateKeys> & {
