@@ -15,6 +15,8 @@
     "@jsxui/babel-plugin": "*",
     "@jsxui/cli": "*",
     "@jsxui/react": "*",
+    "@jsxui/system": "*",
+    "@types/styled-components": "^5.1.22",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "clean-object": "^1.0.2",
     "esbuild-register": "^3.0.0",
@@ -27,6 +29,7 @@
     "react-inspector": "^5.1.1",
     "react-live": "^2.3.0",
     "shiki": "^0.9.12",
+    "styled-components": "^5.3.3",
     "use-roving-index": "^1.3.0"
   }
 }

@@ -1,4 +1,11 @@
-import type { NoInfer, Transform, TransformValues, ComplexProps } from './types'
+import type {
+  NoInfer,
+  Transform,
+  TransformValues,
+  TransformValue,
+  ComplexProps,
+  ComplexValue,
+} from './types'
 
 export function createSystem<
   Theme extends Record<'mediaQueries' | string, unknown>
@@ -99,4 +106,12 @@ export function createSystem<
   }
 
   return { collectStyles, createVariant, theme }
+}
+
+export type {
+  Transform,
+  TransformValues,
+  TransformValue,
+  ComplexProps,
+  ComplexValue,
 }
