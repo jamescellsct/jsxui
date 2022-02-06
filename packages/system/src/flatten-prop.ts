@@ -1,42 +1,52 @@
 import type { Transform } from './types'
 
 /**
- * Takes a media query / state prop value and returns a flattened CSS prop object.
+ * Flatten complex prop values (initial / media query / state).
  */
-export function flattenStyleProp<
+export function flattenProp<
   Transforms extends Record<string, Transform>,
   States extends Record<string, boolean>
->(
-  propName: string,
-  propValue: unknown,
-  transforms: Transforms,
-  states: States,
+>({
+  name,
+  value,
+  transforms,
+  states,
+  mediaQueries,
+}: {
+  name: string
+  value: unknown
+  transforms: Transforms
+  states: States
   mediaQueries: Record<string, unknown>
-) {
-  if (typeof propValue === 'object') {
+}) {
+  if (typeof value === 'object') {
     let parsedPropValue = null
 
     // First, check for state prop values
-    Object.entries(propValue).forEach(([stateKey, value]) => {
+    Object.entries(value).forEach(([stateKey, value]) => {
       if (stateKey === 'initial' || states[stateKey]) {
         parsedPropValue = value
       }
     })
 
     if (parsedPropValue) {
-      return Object.entries(getStylePropValue(propName, propValue, transforms))
+      return Object.entries(getStylePropValue(name, value, transforms))
     }
 
     // If none were available and we made it here, return media query props
-    return Object.entries(propValue).map(([stateKey, value]) => [
+    return Object.entries(value).map(([stateKey, value]) => [
       mediaQueries[stateKey] || stateKey,
-      getStylePropValue(propName, value, transforms),
+      getStylePropValue(name, value, transforms),
     ])
   }
 
-  return Object.entries(getStylePropValue(propName, propValue, transforms))
+  return Object.entries(getStylePropValue(name, value, transforms))
 }
 
-function getStylePropValue(name, value, transforms) {
+function getStylePropValue<Transforms extends Record<string, Transform>>(
+  name: string,
+  value: unknown,
+  transforms: Transforms
+) {
   return transforms[name] ? transforms[name].call(null, value) : value
 }
