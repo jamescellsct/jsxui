@@ -1,0 +1,36 @@
+{
+  "name": "@jsxui/system",
+  "version": "0.1.0",
+  "author": "Travis Arnold",
+  "description": "Utilities for setting up design systems.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souporserious/jsxui/tree/main/packages/system"
+  },
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "react",
+    "react-native",
+    "ui",
+    "design-system",
+    "design",
+    "system",
+    "css",
+    "css-in-js",
+    "styled",
+    "components"
+  ],
+  "scripts": {
+    "dev": "node build.js --watch",
+    "build": "node build.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "sort-css-media-queries": "^2.0.4"
+  }
+}

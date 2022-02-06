@@ -12,13 +12,14 @@
     "cli": "yarn workspace @jsxui/cli",
     "editor": "yarn workspace @jsxui/editor",
     "react": "yarn workspace @jsxui/react",
+    "system": "yarn workspace @jsxui/system",
     "site": "yarn workspace site"
   },
   "devDependencies": {
     "@babel/core": "^7.15.4",
     "@babel/preset-env": "^7.15.4",
     "@babel/preset-typescript": "^7.15.0",
-    "@types/jest": "^27.0.1",
+    "@types/jest": "^27.4.0",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
     "babel-jest": "^27.1.0",
@@ -30,6 +31,7 @@
     "npm-dts": "^1.3.10",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2",
+    "ts-jest": "^27.1.3",
     "turbo": "^1.1.2",
     "typescript": "^4.4.2"
   },

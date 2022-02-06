@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`collect local variant styles 1`] = `
+Object {
+  "attributes": Object {
+    "as": "h1",
+  },
+  "styles": Object {
+    "fontSize": 40,
+  },
+}
+`;
