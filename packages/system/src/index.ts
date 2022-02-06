@@ -37,6 +37,10 @@ export function createSystem<
     [K in keyof T]: StateValue<T[K], S>
   }
 
+  function getStylePropValue(name, value, transforms) {
+    return transforms[name] ? transforms[name].call(null, value) : value
+  }
+
   /**
    * Takes a media query / state prop value and returns a flattened CSS prop object.
    */
@@ -60,17 +64,19 @@ export function createSystem<
       })
 
       if (parsedPropValue) {
-        return Object.entries(transforms[propName].call(null, parsedPropValue))
+        return Object.entries(
+          getStylePropValue(propName, propValue, transforms)
+        )
       }
 
       // If none were available and we made it here, return media query props
       return Object.entries(propValue).map(([stateKey, value]) => [
         theme.mediaQueries[stateKey] || stateKey,
-        transforms[propName].call(null, value),
+        getStylePropValue(propName, value, transforms),
       ])
     }
 
-    return Object.entries(transforms[propName].call(null, propValue))
+    return Object.entries(getStylePropValue(propName, propValue, transforms))
   }
 
   /**
@@ -79,30 +85,20 @@ export function createSystem<
   function parseStyleProps<
     Transforms extends Record<string, Transform>,
     States extends Record<string, boolean>
-  >(
-    props: Record<string, unknown>,
-    transforms: Transforms,
-    states: States
-  ): Record<string, unknown> {
-    const transformKeys = Object.keys(transforms)
-    const restProps: Record<string, unknown> = {}
+  >(props: Record<string, unknown>, transforms: Transforms, states: States) {
     let styleProps = {}
 
     for (const prop in props) {
       const value = props[prop]
-      if (transformKeys.includes(prop)) {
-        styleProps = {
-          ...styleProps,
-          ...Object.fromEntries(
-            flattenStyleProp(prop, value, transforms, states)
-          ),
-        }
-      } else {
-        restProps[prop] = value
+      styleProps = {
+        ...styleProps,
+        ...Object.fromEntries(
+          flattenStyleProp(prop, value, transforms, states)
+        ),
       }
     }
 
-    const flattenedStyles = Object.entries(styleProps).reduce(
+    const flattenedMediaStyles = Object.entries(styleProps).reduce(
       (styles, [key, value]) => {
         if (styles[key]) {
           //@ts-ignore
@@ -110,17 +106,23 @@ export function createSystem<
         }
         return { ...styles, [key]: value }
       },
-      {} as any
+      {}
     )
 
-    return {
-      styleProps: Object.fromEntries(
-        Object.entries(flattenedStyles).sort((a, b) =>
-          sortMediaQueries(a[0], b[0])
-        )
-      ),
-      restProps,
-    }
+    return Object.fromEntries(
+      Object.entries(flattenedMediaStyles).sort((a, b) =>
+        sortMediaQueries(a[0], b[0])
+      )
+    )
+  }
+
+  const allVariants = new Map<
+    Parameters<typeof createVariant>[0],
+    ReturnType<typeof createVariant>
+  >()
+
+  function collectStyles() {
+    return null
   }
 
   function createVariant<
@@ -130,11 +132,7 @@ export function createSystem<
     VariantKeys extends string,
     Variant extends StateProps<{ as: string }, StateKeys> &
       MediaQueryAndStateProps<Partial<Props>, StateKeys>
-  >({
-    defaults: incomingDefaults,
-    transforms,
-    variants,
-  }: {
+  >(config: {
     defaults?: MediaQueryAndStateProps<Partial<Props>, StateKeys> & {
       variant?: NoInfer<VariantKeys>
     }
@@ -142,8 +140,8 @@ export function createSystem<
     transforms: Transforms
     variants: Record<VariantKeys, Variant>
   }) {
+    const { defaults: incomingDefaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaults } = incomingDefaults || {}
-
     const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
 
     function getProps(
@@ -151,7 +149,7 @@ export function createSystem<
       states?: Partial<Record<StateKeys, boolean>>
     ) {
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
-      // TODO: add merge function that handles state props
+      // TODO: add merge function that handles media query and state props
       const props = { ...defaults, ...variantProps }
       const attributes: Record<string, unknown> = {}
       const styles: Partial<Pick<typeof props, keyof Transforms>> = {}
@@ -162,54 +160,51 @@ export function createSystem<
 
       for (let name in props) {
         const value = props[name]
+        const parsedeValue =
+          typeof value === 'object'
+            ? value[lastActiveStateKey || 'initial']
+            : value
         if (transformKeys.includes(name)) {
-          if (typeof value === 'object') {
-            styles[name] = value[lastActiveStateKey || 'initial']
-          } else {
-            styles[name] = value
-          }
+          styles[name] = parsedeValue
         } else {
-          if (typeof value === 'object') {
-            attributes[name] = value[lastActiveStateKey || 'initial']
-          } else {
-            attributes[name] = value
-          }
+          attributes[name] = parsedeValue
         }
       }
 
-      // TODO: store/cache attributes and styles here
+      const aliasedStyles = Object.fromEntries(
+        Object.entries(styles).map(([key, parsedValue]) => {
+          const value = props[key]
+          let context = null
+
+          for (let themeKey in theme) {
+            // @ts-ignore
+            if (theme[themeKey][value]) {
+              context = themeKey
+              break
+            }
+          }
+
+          return [key, context ? `var(--${context}-${value})` : parsedValue]
+        })
+      )
 
       return {
         attributes,
-        // we return lookup ids for styles
-        // this allows them to be collected at any level and matches the behavior of CSS properties
-        styles: Object.fromEntries(
-          Object.keys(styles).map((key) => {
-            const value = props[key]
-            let contextKey = null
-
-            for (let themeKey in theme) {
-              // @ts-ignore
-              if (theme[themeKey][value]) {
-                contextKey = themeKey
-                break
-              }
-            }
-
-            return [key, contextKey ? `var(--${contextKey}-${value})` : value]
-          })
-        ),
+        styles: aliasedStyles,
       }
     }
 
-    // TODO: possibly switch back to two separate attribute/style functions?
-    // This would give us a hint when and where they are called
-    // Could possibly be beneficial to precalculate styles and attributes?
+    // Store variant for access in collectStyles
+    allVariants.set(config, {
+      variants,
+      getProps,
+    })
+
     return {
       variants,
       getProps,
     }
   }
 
-  return { createVariant, theme }
+  return { collectStyles, createVariant, theme }
 }

@@ -1,6 +1,6 @@
 import { createSystem } from './index'
 
-const { createVariant, theme } = createSystem({
+const { collectStyles, createVariant, theme } = createSystem({
   mediaQueries: {
     small: '(min-width: 0px)',
     medium: '(min-width: 720px)',
@@ -9,8 +9,8 @@ const { createVariant, theme } = createSystem({
   },
   colors: {
     foreground: { initial: '#000', dark: '#fff' },
+    foregroundInteractive: 'blue',
     background: { initial: '#fff', dark: '#000' },
-    activeSecondary: 'blue',
   },
 })
 
@@ -40,17 +40,17 @@ const textVariant = createVariant({
     },
     link: {
       as: 'a',
-      color: { hover: 'activeSecondary' },
+      color: { hover: 'foregroundInteractive' },
     },
   },
 })
 
-test('collecting single variant styles', () => {
-  expect(textVariant.getProps('heading1')).toMatchSnapshot()
+test('collecting all variant styles', () => {
+  expect(collectStyles()).toMatchSnapshot()
 })
 
-test('collecting all variant styles', () => {
-  // collectStyles
+test('collecting single variant styles', () => {
+  expect(textVariant.getProps('heading1')).toMatchSnapshot()
 })
 
 test('variant attribute states', () => {
@@ -61,4 +61,9 @@ test('variant attribute states', () => {
 test('variant style alias', () => {
   const props = textVariant.getProps('body')
   expect(props.styles.color).toEqual('var(--colors-foreground)')
+})
+
+test('variant style states', () => {
+  const props = textVariant.getProps('link', { hover: true })
+  expect(props.styles.color).toEqual('foregroundInteractive')
 })

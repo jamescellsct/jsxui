@@ -1,5 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`collecting all variant styles 1`] = `null`;
+
 exports[`collecting single variant styles 1`] = `
 Object {
   "attributes": Object {
@@ -7,11 +9,7 @@ Object {
   },
   "styles": Object {
     "color": "var(--colors-foreground)",
-    "fontSize": Object {
-      "initial": 40,
-      "large": 60,
-      "medium": 48,
-    },
+    "fontSize": 40,
   },
 }
 `;
