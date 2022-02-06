@@ -45,16 +45,20 @@ const textVariant = createVariant({
   },
 })
 
-test('collect local variant styles', () => {
+test('collecting single variant styles', () => {
   expect(textVariant.getProps('heading1')).toMatchSnapshot()
 })
 
-test('variant attribute states work', () => {
+test('collecting all variant styles', () => {
+  // collectStyles
+})
+
+test('variant attribute states', () => {
   const props = textVariant.getProps('body', { descendant: true })
   expect(props.attributes.as).toEqual('span')
 })
 
-test('variant style states work', () => {
-  const props = textVariant.getProps('link', { hover: true })
-  expect(props.styles.color).toEqual('activeSecondary')
+test('variant style alias', () => {
+  const props = textVariant.getProps('body')
+  expect(props.styles.color).toEqual('var(--colors-foreground)')
 })

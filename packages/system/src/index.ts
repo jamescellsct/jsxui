@@ -150,7 +150,9 @@ export function createSystem<
       variant?: VariantKeys,
       states?: Partial<Record<StateKeys, boolean>>
     ) {
-      const props = variants[variant || (defaultVariant as VariantKeys)]
+      const variantProps = variants[variant || (defaultVariant as VariantKeys)]
+      // TODO: add merge function that handles state props
+      const props = { ...defaults, ...variantProps }
       const attributes: Record<string, unknown> = {}
       const styles: Partial<Pick<typeof props, keyof Transforms>> = {}
       const activeStateKeys = Object.entries(states || {})
@@ -175,9 +177,34 @@ export function createSystem<
         }
       }
 
-      return { attributes, styles }
+      // TODO: store/cache attributes and styles here
+
+      return {
+        attributes,
+        // we return lookup ids for styles
+        // this allows them to be collected at any level and matches the behavior of CSS properties
+        styles: Object.fromEntries(
+          Object.keys(styles).map((key) => {
+            const value = props[key]
+            let contextKey = null
+
+            for (let themeKey in theme) {
+              // @ts-ignore
+              if (theme[themeKey][value]) {
+                contextKey = themeKey
+                break
+              }
+            }
+
+            return [key, contextKey ? `var(--${contextKey}-${value})` : value]
+          })
+        ),
+      }
     }
 
+    // TODO: possibly switch back to two separate attribute/style functions?
+    // This would give us a hint when and where they are called
+    // Could possibly be beneficial to precalculate styles and attributes?
     return {
       variants,
       getProps,

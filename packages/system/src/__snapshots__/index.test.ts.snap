@@ -1,12 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`collect local variant styles 1`] = `
+exports[`collecting single variant styles 1`] = `
 Object {
   "attributes": Object {
     "as": "h1",
   },
   "styles": Object {
-    "fontSize": 40,
+    "color": "var(--colors-foreground)",
+    "fontSize": Object {
+      "initial": 40,
+      "large": 60,
+      "medium": 48,
+    },
   },
 }
 `;
