@@ -47,7 +47,11 @@ type CreateVariantReturnType = ReturnType<
   ReturnType<typeof createSystem>['createVariant']
 >
 
-type VariantProps<T extends CreateVariantReturnType> = ReturnType<T['getProps']>
+type VariantProps<T extends CreateVariantReturnType> = ReturnType<
+  T['getProps']
+> & {
+  variant?: keyof T['variants']
+}
 
 type StyleProps<T extends CreateVariantReturnType> = VariantProps<T>['styles']
 
@@ -58,6 +62,16 @@ type TextAttributeProps = AttributeProps<typeof textVariant>
 
 type TextStyleProps = StyleProps<typeof textVariant>
 
-// export const Text = styled.p.attrs(({ variant }) => ({
-//   as: textVariant.getProps(variant).attributes.as,
-// }))<{ variant: string }>(textVariant.getProps)
+export const Text = styled.p.attrs<TextAttributeProps>(
+  (props) => textVariant.getProps(props.variant).attributes
+)<TextStyleProps>((props) => textVariant.getProps(props.variant).styles)
+
+const App = () => {
+  return (
+    <>
+      <Text>Default Body</Text>
+      <Text variant="heading1">Heading 1</Text>
+      <Text variant="caption">Bad Variant</Text>
+    </>
+  )
+}
