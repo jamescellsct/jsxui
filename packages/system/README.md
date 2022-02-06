@@ -217,3 +217,95 @@ textVariant.override('heading1', {
 ```
 
 This is helpful inside of a component system if we want to be able to override the defaults for a tree:
+
+## Guides
+
+### Button
+
+```tsx
+import type { AttributeProps, StyleProps } from '@jsxui/system'
+import type { BoxSizeValue, ColorValue, ContainerSizeValue } from 'system'
+import { createVariant, mergeVariants, theme } from 'system'
+import styled from 'styled-components'
+
+const colorTransform = (color: ColorValue) => theme.colors[color]
+
+const buttonVariant = createVariant({
+  name: 'variant',
+  transforms: {
+    borderSize: (size: number) => size,
+    borderColor: colorTransform,
+    backgroundColor: colorTransform,
+    color: colorTransform,
+  },
+  defaults: {
+    variant: 'primary',
+  },
+  variants: {
+    primary: {
+      color: 'foreground',
+      backgroundColor: 'interactiveBackgroundPrimary',
+    },
+    primaryOutline: {
+      color: 'interactiveForegroundPrimary',
+      borderColor: 'interactiveBorderPrimary',
+      borderSize: 1,
+    },
+    secondary: {
+      color: 'foreground',
+      color: 'interactiveBackgroundSecondary',
+    },
+    secondaryOutline: {
+      color: 'interactiveForegroundSecondary',
+      borderColor: 'interactiveBorderSecondary',
+      borderSize: 1,
+    },
+  },
+})
+
+const sizeVariant = createVariant({
+  name: 'size',
+  transforms: {
+    width: (size: BoxSizeValue | ContainerSizeValue) => {
+      return theme.boxSizes[size] || theme.containerSizes[size] || size
+    },
+    minHeight: (size: number) => theme.boxSizes[size] || size,
+    fontSize: (size: string) => size,
+  },
+  variants: {
+    small: {
+      fontSize: '16px',
+      minHeight: '20px',
+    },
+    medium: {
+      fontSize: '20px',
+      minHeight: '24px',
+    },
+    large: {
+      fontSize: '24px',
+      minHeight: '32px',
+    },
+  },
+})
+
+const variants = mergeVariants(buttonVariant, sizeVariant)
+
+export const Button = styled.button.attrs<AttributeProps<typeof variants>>(
+  (props) => variants.getProps(props.variant, props.states).attributes
+)<StyleProps<typeof variants>>(
+  (props) => variants.getProps(props.variant, props.states).styles
+)
+
+// Example
+function App() {
+  return (
+    <Button
+      size={{
+        initial: 'small',
+        medium: 'large',
+      }}
+      variant="primary"
+    />
+  )
+}
+```
