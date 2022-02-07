@@ -13,6 +13,8 @@ npm install @jsxui/system
 
 This package ships with a helper function to create a design system configuration that returns context aware utilities.
 
+### createSystem
+
 After installing, import the helper function and create your design system configuration:
 
 ```ts
@@ -36,7 +38,9 @@ export const { createVariant, collectVariants, theme } = createSystem({
 export type ColorValue = keyof typeof theme.colors
 ```
 
-Now we can use the helper function to create our first variant which will be used for text in our design system:
+### createVariant
+
+Use the `createVariant` helper function to create your first variant. We'll create a text variant to display different text styles:
 
 ```ts
 import { createVariant, ColorValue, theme } from 'system'
@@ -49,15 +53,16 @@ const textVariant = createVariant({
 })
 ```
 
-Notice that we start by defining [transforms]. These are functions that will be applied to the variant's props and can return either a single value or an object of multiple values.
+Notice that we start by defining [transforms]. These are functions that will be applied to the variant's props and can return either a single value or an object of multiple values. If you've written Sass before, these are similar to [mixins](https://sass-lang.com/documentation/at-rules/mixin).
 
-Now we can start to define variants as well as defaults:
+Now that we have a few transforms defined, we can start to add each variant. We can also define any default props that should be applied to all variants like the text color:
 
 ```ts
 import { createVariant, ColorValue } from 'system'
 
 const textVariant = createVariant({
   transforms: {
+    fontSize: (size: number) => size,
     color: (color: ColorValue) => ({ color: theme.colors[color] }),
   },
   defaults: {
@@ -80,7 +85,7 @@ const textVariant = createVariant({
 })
 ```
 
-Now we can use our text variant with whatever library we want. Let's see how we can use it with Styled Components:
+This text variant can be used with any library. For an example, let's see how we can use it with [Styled Components](https://styled-components.com/), a popular CSS-in-JS library:
 
 ```tsx
 import type { AttributeProps, StyleProps } from '@jsxui/system'
@@ -112,6 +117,30 @@ function App() {
 }
 ```
 
+If you'd like to use CSS properties use the `collectVariants` helper to create global styles:
+
+```tsx
+import { useMemo } from 'react'
+import { ThemeKey } from '@jsxui/system'
+import { collectVariants, theme } from 'system'
+import { createGlobalStyle, ThemeProvider } from 'styled-components'
+
+export function AppProvider() {
+  const GlobalStyles = useMemo(() => {
+    return createGlobalStyle(collectVariants())
+  }, [])
+
+  return (
+    <>
+      <GlobalStyles />
+      <App />
+    </>
+  )
+}
+```
+
+Now variants will reference a global CSS variable. This has the benefit of allowing us to easily change the theme without having to update all of our components and is particularly useful for server-side rendering.
+
 ### Theming
 
 Most applications need to be able to change the theme of their design system. This is where the `theme` object comes in.
@@ -139,7 +168,7 @@ export function AppProvider({ theme }: { theme: ThemeKey<typeof theme> }) {
 }
 ```
 
-Using the `AppProvider` component we can now provide the proper CSS properties that can be used by leaf components.
+Using the `AppProvider` component we can provide the proper CSS properties that can be used by leaf components.
 
 ```tsx
 import { AppProvider } from 'system'
