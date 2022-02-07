@@ -46,22 +46,22 @@ Use the `createVariant` helper function to create your first variant. We'll crea
 import { createVariant, ColorValue, theme } from 'system'
 
 const textVariant = createVariant({
-  transforms: {
+  styles: {
     fontSize: (size: number) => size,
     color: (color: ColorValue) => ({ color: theme.colors[color] }),
   },
 })
 ```
 
-Notice that we start by defining [transforms]. These are functions that will be applied to the variant's props and can return either a single value or an object of multiple values. If you've written Sass before, these are similar to [mixins](https://sass-lang.com/documentation/at-rules/mixin).
+Notice that we start by defining [styles]. These are functions that will be applied to the variant's props and can return either a single value or an object of multiple values. If you've written Sass before, these are similar to [mixins](https://sass-lang.com/documentation/at-rules/mixin).
 
-Now that we have a few transforms defined, we can start to add each variant. We can also define any default props that should be applied to all variants like the text color:
+Now that we have a few styles defined, we can start to add each variant. We can also define any default props that should be applied to all variants like the text color:
 
 ```ts
 import { createVariant, ColorValue } from 'system'
 
 const textVariant = createVariant({
-  transforms: {
+  styles: {
     fontSize: (size: number) => size,
     color: (color: ColorValue) => ({ color: theme.colors[color] }),
   },
@@ -84,6 +84,10 @@ const textVariant = createVariant({
   },
 })
 ```
+
+And that's it! We've created our first variant that can be used to style text and display the appropriate element in our UI.
+
+## Using with other libraries
 
 This text variant can be used with any library. For an example, let's see how we can use it with [Styled Components](https://styled-components.com/), a popular CSS-in-JS library:
 
@@ -117,7 +121,7 @@ function App() {
 }
 ```
 
-If you'd like to use CSS properties use the `collectVariants` helper to create global styles:
+If you'd like to use CSS properties, use the `collectVariants` helper to create global styles:
 
 ```tsx
 import { useMemo } from 'react'
@@ -262,7 +266,7 @@ const colorTransform = (color: ColorValue) => theme.colors[color]
 const buttonVariant = createVariant({
   name: 'variant',
   states: ['disabled', 'pressed', 'focused'],
-  transforms: {
+  styles: {
     backgroundColor: colorTransform,
     color: colorTransform,
     borderColor: colorTransform,
@@ -297,7 +301,7 @@ const buttonVariant = createVariant({
 
 const sizeVariant = createVariant({
   name: 'size',
-  transforms: {
+  styles: {
     fontSize: (size: string) => size,
     minHeight: (size: number) => theme.boxSizes[size],
     spaceAround: (size: number) => {
@@ -342,6 +346,45 @@ function App() {
         medium: 'large',
       }}
       variant="primary"
+    />
+  )
+}
+```
+
+### Image
+
+```tsx
+import { createVariant } from 'system'
+
+const imageVariant = createVariant({
+  attributes: {
+    source: (value: string) => value,
+    title: (value: string) => value,
+  },
+})
+
+const Image = styled((props) => {
+  const { source, title } = imageVariant.getProps(props.variant, props.states)
+  return source.dark ? (
+    <picture>
+      <source media="(prefers-color-scheme:dark)" srcset={source.dark} />
+      <img src={source.initial} title={title} />
+    </picture>
+  ) : (
+    <img src={source.initial} title={title} />
+  )
+})({
+  display: 'block',
+})
+
+// Example
+function App() {
+  return (
+    <Image
+      source={{
+        initial: 'light.jpg',
+        dark: 'dark.jpg',
+      }}
     />
   )
 }
