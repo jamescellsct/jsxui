@@ -289,7 +289,7 @@ const buttonVariant = createVariant({
     },
     secondary: {
       color: 'foreground',
-      color: 'interactiveBackgroundSecondary',
+      backgroundColor: 'interactiveBackgroundSecondary',
     },
     secondaryOutline: {
       color: 'interactiveForegroundSecondary',
@@ -333,20 +333,19 @@ const sizeVariant = createVariant({
 
 const variants = mergeVariants(buttonVariant, sizeVariant)
 
-export const Button = styled.button<StyleProps<typeof variants>>(
-  (props) => variants.getProps(props.variant, props.states).styles
+export const Button = styled.button<StyleProps<typeof variants>>((props) =>
+  variants.getProps(props.variant, { disabled: props.disabled })
 )
 
 // Example
 function App() {
   return (
-    <Button
-      size={{
-        initial: 'small',
-        medium: 'large',
-      }}
-      variant="primary"
-    />
+    <>
+      <Button size={{ initial: 'small', medium: 'large' }} variant="secondary">
+        Hello World
+      </Button>
+      <Button disabled>Disabled</Button>
+    </>
   )
 }
 ```
