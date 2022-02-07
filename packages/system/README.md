@@ -232,13 +232,16 @@ const colorTransform = (color: ColorValue) => theme.colors[color]
 
 const buttonVariant = createVariant({
   name: 'variant',
+  states: ['disabled', 'pressed', 'focused'],
   transforms: {
-    borderSize: (size: number) => size,
-    borderColor: colorTransform,
     backgroundColor: colorTransform,
     color: colorTransform,
+    borderColor: colorTransform,
+    borderSize: (size: number) => size,
+    opacity: (opacity: number) => opacity,
   },
   defaults: {
+    opacity: { disabled: 0.65 },
     variant: 'primary',
   },
   variants: {
@@ -266,33 +269,38 @@ const buttonVariant = createVariant({
 const sizeVariant = createVariant({
   name: 'size',
   transforms: {
-    width: (size: BoxSizeValue | ContainerSizeValue) => {
-      return theme.boxSizes[size] || theme.containerSizes[size] || size
-    },
-    minHeight: (size: number) => theme.boxSizes[size] || size,
     fontSize: (size: string) => size,
+    minHeight: (size: number) => theme.boxSizes[size] || size,
+    spaceAround: (size: number) => {
+      const value = theme.boxSpacings[size] || size
+      return {
+        paddingLeft: value,
+        paddingRight: value,
+      }
+    },
   },
   variants: {
     small: {
       fontSize: '16px',
       minHeight: '20px',
+      spaceAround: '4px',
     },
     medium: {
       fontSize: '20px',
       minHeight: '24px',
+      spaceAround: '8px',
     },
     large: {
       fontSize: '24px',
       minHeight: '32px',
+      spaceAround: '16px',
     },
   },
 })
 
 const variants = mergeVariants(buttonVariant, sizeVariant)
 
-export const Button = styled.button.attrs<AttributeProps<typeof variants>>(
-  (props) => variants.getProps(props.variant, props.states).attributes
-)<StyleProps<typeof variants>>(
+export const Button = styled.button<StyleProps<typeof variants>>(
   (props) => variants.getProps(props.variant, props.states).styles
 )
 
