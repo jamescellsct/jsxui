@@ -83,11 +83,11 @@ const textVariant = createVariant({
 Now we can use our text variant with whatever library we want. Let's see how we can use it with Styled Components:
 
 ```tsx
-import type { StyleProps } from '@jsxui/system'
+import type { AttributeProps, StyleProps } from '@jsxui/system'
 import styled from 'styled-components'
 import { textVariant } from 'system'
 
-export type TextAttributeProps = StyleProps<typeof textVariant>
+export type TextAttributeProps = AttributeProps<typeof textVariant>
 
 export type TextStyleProps = StyleProps<typeof textVariant>
 
@@ -223,8 +223,8 @@ This is helpful inside of a component system if we want to be able to override t
 ### Button
 
 ```tsx
-import type { AttributeProps, StyleProps } from '@jsxui/system'
-import type { BoxSizeValue, ColorValue, ContainerSizeValue } from 'system'
+import type { StyleProps } from '@jsxui/system'
+import type { BoxSizeValue, ColorValue } from 'system'
 import { createVariant, mergeVariants, theme } from 'system'
 import styled from 'styled-components'
 
@@ -270,9 +270,9 @@ const sizeVariant = createVariant({
   name: 'size',
   transforms: {
     fontSize: (size: string) => size,
-    minHeight: (size: number) => theme.boxSizes[size] || size,
+    minHeight: (size: number) => theme.boxSizes[size],
     spaceAround: (size: number) => {
-      const value = theme.boxSpacings[size] || size
+      const value = theme.boxSpacings[size]
       return {
         paddingLeft: value,
         paddingRight: value,
