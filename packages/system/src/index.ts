@@ -32,7 +32,7 @@ export function createSystem<
   const { mediaQueries, ...tokenSets } = theme
   const allVariants = new Map()
 
-  function collectStyles() {
+  function collectMediaQueryStyles() {
     const styles = Object.fromEntries(
       ['initial']
         .concat(Object.keys(mediaQueries))
@@ -50,6 +50,19 @@ export function createSystem<
         }
       })
     })
+
+    return styles
+  }
+
+  function collectVariantStyles() {
+    // TODO: return variables for complex variant values
+    // e.g. fontSize: { initial: '1rem', small: '1.5rem', large: '2rem' }
+    // :root { --fontSize-heading1: 1rem; }
+    // @media (min-width: 720px) { :root { --fontSize-heading1: 1.5rem; } }
+  }
+
+  function collectStyles() {
+    const styles = collectMediaQueryStyles()
 
     return Object.fromEntries(
       Object.entries(styles)
