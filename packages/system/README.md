@@ -356,14 +356,12 @@ function App() {
 import { createVariant } from 'system'
 
 const imageVariant = createVariant({
-  attributes: {
-    source: (value: string) => value,
-    title: (value: string) => value,
+  styles: {
+    width: (value: string) => value,
   },
 })
 
-const Image = styled((props) => {
-  const { source, title } = imageVariant.getProps(props.variant, props.states)
+const Image = styled(({ source, title }) => {
   return source.dark ? (
     <picture>
       <source media="(prefers-color-scheme:dark)" srcset={source.dark} />
@@ -372,9 +370,7 @@ const Image = styled((props) => {
   ) : (
     <img src={source.initial} title={title} />
   )
-})({
-  display: 'block',
-})
+})({ display: 'block' }, (props) => imageVariant.getProps(props.variant).styles)
 
 // Example
 function App() {

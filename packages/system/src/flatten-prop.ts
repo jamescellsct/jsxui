@@ -30,17 +30,19 @@ export function flattenProp<
     })
 
     if (parsedPropValue) {
-      return Object.entries(getStylePropValue(name, value, transforms))
+      return getStylePropValue(name, value, transforms)
     }
 
     // If none were available and we made it here, return media query props
-    return Object.entries(value).map(([stateKey, value]) => [
-      mediaQueries[stateKey] || stateKey,
-      getStylePropValue(name, value, transforms),
-    ])
+    return Object.fromEntries(
+      Object.entries(value).map(([stateKey, value]) => [
+        mediaQueries[stateKey] || stateKey,
+        getStylePropValue(name, value, transforms),
+      ])
+    )
   }
 
-  return Object.entries(getStylePropValue(name, value, transforms))
+  return getStylePropValue(name, value, transforms)
 }
 
 function getStylePropValue<Transforms extends Record<string, Transform>>(

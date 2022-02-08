@@ -1,3 +1,1 @@
-export * from './Spacer'
-export * from './Stack'
-export * from './Text'
+export { Text } from './Text'

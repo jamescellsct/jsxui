@@ -1,152 +1,56 @@
-import * as React from 'react'
-import { createComponent } from '@jsxui/babel-plugin/dist/create-component'
-import { theme } from '../theme'
+import { createContext, useContext } from 'react'
+import type { AttributeProps, StyleProps } from '@jsxui/system'
+import styled from 'styled-components'
+import type { Color } from '../system'
+import { createVariant, collectStyles, theme } from '../system'
 
-export type TextProps = {
-  width?: string
-  size?: number | string
-  weight?: number | string
-  italic?: boolean
-  alignment?: 'start' | 'center' | 'end'
-  color?: string
-  shadow?: string
-  opacity?: number | string
-  children: React.ReactNode
-}
-
-export const Text = createComponent<TextProps>({
-  name: 'Text',
-  defaults: {
-    color: 'foreground',
-  },
+export const textVariant = createVariant({
+  states: ['descendant', 'hover'],
   transforms: {
-    width: (value) => ({
-      width: theme.lineLengths[value] || value,
+    fontSize: (value: number) => ({
+      fontSize: value,
     }),
-    italic: (value) => (value ? { fontStyle: 'italic' } : undefined),
-    size: (value) => {
-      const systemFontSize = theme.fontSizes[value]
-      return {
-        fontSize: systemFontSize
-          ? systemFontSize.default || systemFontSize
-          : value,
-      }
-    },
-    weight: (value) => {
-      const systemFontWeight = theme.fontWeights[value]
-      return {
-        fontWeight: systemFontWeight
-          ? systemFontWeight.default || systemFontWeight
-          : value,
-      }
-    },
-    alignment: (value) => ({
-      textAlign: value,
+    color: (value: Color) => ({
+      color: theme.colors[value],
     }),
-    opacity: (value) => ({
-      opacity: value,
-    }),
-    shadow: (value) => ({
-      filter: value,
-    }),
-    color: (value) => ({
-      color: theme.colors[value] || value,
-    }),
+  },
+  defaults: {
+    variant: 'body',
   },
   variants: {
     heading1: {
-      defaults: {
-        textTransform: 'uppercase',
-        lineHeight: '1.08',
-        italic: true,
-        size: 'xlarge',
-        weight: 'black',
-        shadow: `drop-shadow(-1px 5px #3d157d) drop-shadow(-1px 4px #3d157d) drop-shadow(-1px 3px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 1px #3d157d)`,
-      },
-      web: {
-        as: 'h1',
-      },
-      native: {
-        as: 'Text',
-        accessibilityRole: 'header',
-      },
+      as: 'h1',
+      fontSize: { initial: 40, medium: 48, large: 60 },
     },
-    heading2: {
-      defaults: {
-        textTransform: 'uppercase',
-        lineHeight: '1.08',
-        italic: true,
-        size: 'large',
-        weight: 'black',
-        shadow: `drop-shadow(-1px 3px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 2px #3d157d) drop-shadow(-1px 1px #3d157d) drop-shadow(-1px 1px #3d157d)`,
-      },
-      web: {
-        as: 'h2',
-      },
-      native: {
-        as: 'Text',
-        accessibilityRole: 'header',
-      },
-    },
-    heading3: {
-      defaults: {
-        size: 'medium',
-        color: 'foregroundSecondary',
-      },
-      web: {
-        as: 'h3',
-      },
-      native: {
-        as: 'Text',
-        accessibilityRole: 'header',
-      },
-    },
-    body1: {
-      defaults: {
-        size: 'medium',
-        letterSpacing: 0.8,
-      },
-      web: {
-        as: 'p',
-      },
-      native: {
-        as: 'Text',
-      },
-    },
-    body2: {
-      defaults: {
-        size: 'small',
-        color: 'foregroundSecondary',
-        letterSpacing: 0.8,
-      },
-      web: {
-        as: 'p',
-      },
-      native: {
-        as: 'Text',
-      },
-    },
-  },
-  platforms: {
-    figma: {
-      as: 'Text',
-      source: 'react-figma',
-    },
-    ink: {
-      as: 'Text',
-      source: 'ink',
-    },
-    native: {
-      as: 'Text',
-      source: 'react-native',
-    },
-    web: {
-      as: 'span',
-      defaults: {
-        whiteSpace: 'pre-wrap',
-        margin: 0,
-        cursor: 'default',
-      },
+    body: {
+      as: { initial: 'p', descendant: 'span' },
+      fontSize: 16,
+      color: 'foreground',
     },
   },
 })
+
+export type TextAttributeProps = AttributeProps<typeof textVariant>
+
+export type TextStyleProps = StyleProps<typeof textVariant>
+
+export const TextDescendantContext = createContext(false)
+
+export const Text = styled((props) => {
+  const isDescendant = useContext(TextDescendantContext)
+  const { as: Element = 'span', ...variantProps } = textVariant.getProps(
+    props.variant,
+    {
+      descendant: isDescendant,
+      ...props.states,
+    }
+  ).attributes
+
+  return (
+    <TextDescendantContext.Provider value={true}>
+      <Element {...variantProps} {...props} />
+    </TextDescendantContext.Provider>
+  )
+})<TextStyleProps>(
+  (props) => textVariant.getProps(props.variant, props.states).styles
+)

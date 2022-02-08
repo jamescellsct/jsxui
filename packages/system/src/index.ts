@@ -1,27 +1,66 @@
 import type {
+  ComplexProps,
+  ComplexValue,
+  MediaQueries,
   NoInfer,
   Transform,
   TransformValues,
   TransformValue,
-  ComplexProps,
-  ComplexValue,
 } from './types'
+import { flattenProp } from './flatten-prop'
 
 export function createSystem<
-  Theme extends Record<'mediaQueries' | string, unknown>
+  Theme extends Record<string, unknown> & Record<'mediaQueries', MediaQueries>
 >(theme: Theme) {
   type MediaQueryAndStateProps<Props, StateKeys extends string> = ComplexProps<
     Props,
     keyof Theme['mediaQueries'] | StateKeys
   >
+  /** Searches theme to determine if value is an aliased token. */
+  const getThemeContext = (value) => {
+    let aliasContext = null
 
-  const allVariants = new Map<
-    Parameters<typeof createVariant>[0],
-    ReturnType<typeof createVariant>
-  >()
+    Object.entries(theme).forEach(([context, tokens]) => {
+      if (Object.keys(tokens).some((token) => token === value)) {
+        aliasContext = context
+      }
+    })
+
+    return aliasContext
+  }
+
+  const { mediaQueries, ...tokenSets } = theme
+  const allVariants = new Map()
 
   function collectStyles() {
-    return {}
+    const styles = Object.fromEntries(
+      ['initial']
+        .concat(Object.keys(mediaQueries))
+        .map((queryName) => [queryName, {}])
+    )
+
+    Object.entries(tokenSets).forEach(([tokenSetKey, tokens]) => {
+      Object.entries(tokens).forEach(([tokenKey, value]) => {
+        if (typeof value === 'object') {
+          Object.entries(value).forEach(([stateKey, value]) => {
+            styles[stateKey][`--${tokenSetKey}-${tokenKey}`] = value
+          })
+        } else {
+          styles.initial[`--${tokenSetKey}-${tokenKey}`] = value
+        }
+      })
+    })
+
+    return Object.fromEntries(
+      Object.entries(styles)
+        .filter(([, styles]) => Object.keys(styles).length)
+        .map(([queryName, styles]) => [
+          queryName === 'initial'
+            ? ':root'
+            : `@media ${mediaQueries[queryName]}`,
+          queryName === 'initial' ? styles : { ':root': styles },
+        ])
+    )
   }
 
   function createVariant<
@@ -41,7 +80,6 @@ export function createSystem<
   }) {
     const { defaults: incomingDefaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaults } = incomingDefaults || {}
-    const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
 
     function getProps(
       variant?: VariantKeys,
@@ -50,46 +88,46 @@ export function createSystem<
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
       // TODO: add merge function that handles media query and state props
       const props = { ...defaults, ...variantProps }
-      const attributes: Record<string, unknown> = {}
-      const styles: Partial<Pick<typeof props, keyof Transforms>> = {}
+
+      const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
       const activeStateKeys = Object.entries(states || {})
         .filter(([, value]) => value)
         .map(([key]) => key)
-      const lastActiveStateKey = activeStateKeys[activeStateKeys.length - 1]
+      const lastActiveStateKey =
+        activeStateKeys[activeStateKeys.length - 1] ?? 'initial'
+      const attributes: Record<string, unknown> = {}
+      const styles: Record<string, unknown> = {}
+      // const styles: Partial<Record<keyof Props, any>> = {}
+      // const attributes: Record<string, unknown> = {}
+      // const styles: Partial<Pick<typeof props, keyof Transforms>> = {}
 
-      for (let name in props) {
+      // TODO: can we support CSS states through transforms?
+      // If returning states they are always applied or the user can control this somehow?
+      // (value: string) => ({ initial: ({ color: value }), hover: ({ '&:hover': { color: value } })
+      for (const name in props) {
         const value = props[name]
-        const parsedeValue =
-          typeof value === 'object'
-            ? value[lastActiveStateKey || 'initial']
-            : value
+
         if (transformKeys.includes(name)) {
-          styles[name] = parsedeValue
+          const context = getThemeContext(value)
+
+          styles[name] = context ? `var(--${context}-${value})` : value
         } else {
-          attributes[name] = parsedeValue
-        }
-      }
+          let parsedValue = value
 
-      const aliasedStyles = Object.fromEntries(
-        Object.entries(styles).map(([key, parsedValue]) => {
-          const value = props[key]
-          let context = null
-
-          for (let themeKey in theme) {
-            // @ts-ignore
-            if (theme[themeKey][value]) {
-              context = themeKey
-              break
+          if (typeof value === 'object') {
+            if (lastActiveStateKey) {
+              parsedValue = value[lastActiveStateKey]
             }
           }
 
-          return [key, context ? `var(--${context}-${value})` : parsedValue]
-        })
-      )
+          // TODO: How to handle media query props, event emitter on query change?
+          attributes[name] = parsedValue
+        }
+      }
 
       return {
         attributes,
-        styles: aliasedStyles,
+        styles,
       }
     }
 
@@ -107,6 +145,24 @@ export function createSystem<
 
   return { collectStyles, createVariant, theme }
 }
+
+export type CreateVariantReturnType = ReturnType<
+  ReturnType<typeof createSystem>['createVariant']
+>
+
+export type VariantProps<T extends CreateVariantReturnType> = ReturnType<
+  T['getProps']
+>
+
+export type StyleProps<T extends CreateVariantReturnType> =
+  VariantProps<T>['styles'] & {
+    variant?: keyof T['variants']
+  }
+
+export type AttributeProps<T extends CreateVariantReturnType> =
+  VariantProps<T>['attributes'] & {
+    variant?: keyof T['variants']
+  }
 
 export type {
   Transform,

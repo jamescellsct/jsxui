@@ -31,6 +31,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "sort-css-media-queries": "^2.0.4"
+    "sort-css-media-queries": "^2.0.4",
+    "type-fest": "^2.11.1"
   }
 }
