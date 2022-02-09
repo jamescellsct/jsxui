@@ -1,3 +1,4 @@
+import { kebabCase } from 'case-anything'
 import type {
   ComplexProps,
   ComplexValue,
@@ -7,7 +8,6 @@ import type {
   TransformValues,
   TransformValue,
 } from './types'
-import { flattenProp } from './flatten-prop'
 
 export function createSystem<
   Theme extends Record<string, unknown> & Record<'mediaQueries', MediaQueries>
@@ -31,49 +31,37 @@ export function createSystem<
 
   const { mediaQueries, ...tokenSets } = theme
   const allVariants = new Map()
+  const contextStyles = Object.fromEntries(
+    ['initial']
+      .concat(Object.keys(mediaQueries))
+      .map((queryName) => [queryName, {}])
+  )
 
-  function collectMediaQueryStyles() {
-    const styles = Object.fromEntries(
-      ['initial']
-        .concat(Object.keys(mediaQueries))
-        .map((queryName) => [queryName, {}])
-    )
-
+  function collectStyles() {
+    // Collect media query styles
     Object.entries(tokenSets).forEach(([tokenSetKey, tokens]) => {
       Object.entries(tokens).forEach(([tokenKey, value]) => {
+        const propertyName = createToken(tokenSetKey, tokenKey)
         if (typeof value === 'object') {
           Object.entries(value).forEach(([stateKey, value]) => {
-            styles[stateKey][`--${tokenSetKey}-${tokenKey}`] = value
+            contextStyles[stateKey][propertyName] = value
           })
         } else {
-          styles.initial[`--${tokenSetKey}-${tokenKey}`] = value
+          contextStyles.initial[propertyName] = value
         }
       })
     })
 
-    return styles
-  }
-
-  function collectVariantStyles() {
-    // TODO: return variables for complex variant values
-    // e.g. fontSize: { initial: '1rem', small: '1.5rem', large: '2rem' }
-    // :root { --fontSize-heading1: 1rem; }
-    // @media (min-width: 720px) { :root { --fontSize-heading1: 1.5rem; } }
-  }
-
-  function collectStyles() {
-    const styles = collectMediaQueryStyles()
-
-    return Object.fromEntries(
-      Object.entries(styles)
-        .filter(([, styles]) => Object.keys(styles).length)
-        .map(([queryName, styles]) => [
-          queryName === 'initial'
-            ? ':root'
-            : `@media ${mediaQueries[queryName]}`,
-          queryName === 'initial' ? styles : { ':root': styles },
-        ])
+    // Create CSS styles
+    const globalStyles = Object.fromEntries(
+      Object.entries(contextStyles).map(([queryName, styles]) =>
+        queryName === 'initial'
+          ? [':root', styles]
+          : [`@media ${mediaQueries[queryName]}`, { ':root': styles }]
+      )
     )
+
+    return globalStyles
   }
 
   function createVariant<
@@ -91,16 +79,20 @@ export function createSystem<
     transforms: Transforms
     variants: Record<VariantKeys, Variant>
   }) {
-    const { defaults: incomingDefaults, transforms, variants } = config
-    const { variant: defaultVariant, ...defaults } = incomingDefaults || {}
+    const { defaults, transforms, variants } = config
+    const { variant: defaultVariant, ...defaultProps } = defaults || {}
 
-    function getProps(
-      variant?: VariantKeys,
+    function getProps({
+      variant,
+      states,
+      ...instanceProps
+    }: Record<string, unknown> & {
+      variant?: VariantKeys
       states?: Partial<Record<StateKeys, boolean>>
-    ) {
+    } = {}) {
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
       // TODO: add merge function that handles media query and state props
-      const props = { ...defaults, ...variantProps }
+      const props = { ...defaultProps, ...variantProps, ...instanceProps }
 
       const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
       const activeStateKeys = Object.entries(states || {})
@@ -110,6 +102,7 @@ export function createSystem<
         activeStateKeys[activeStateKeys.length - 1] ?? 'initial'
       const attributes: Record<string, unknown> = {}
       const styles: Record<string, unknown> = {}
+
       // const styles: Partial<Record<keyof Props, any>> = {}
       // const attributes: Record<string, unknown> = {}
       // const styles: Partial<Pick<typeof props, keyof Transforms>> = {}
@@ -122,8 +115,24 @@ export function createSystem<
 
         if (transformKeys.includes(name)) {
           const context = getThemeContext(value)
+          let parsedValue
 
-          styles[name] = context ? `var(--${context}-${value})` : value
+          if (context && typeof value === 'string') {
+            parsedValue = accessToken(context, value)
+          } else if (typeof value === 'object') {
+            const propertyName = createToken(name, variant)
+
+            // TODO: add support for states
+            Object.entries(value).forEach(([stateKey, value]) => {
+              contextStyles[stateKey][propertyName] = value
+            })
+
+            parsedValue = accessToken(name, variant)
+          } else {
+            parsedValue = value
+          }
+
+          styles[name] = parsedValue
         } else {
           let parsedValue = value
 
@@ -133,7 +142,7 @@ export function createSystem<
             }
           }
 
-          // TODO: How to handle media query props, event emitter on query change?
+          // TODO: How to handle media query attribute props, event emitter on query change?
           attributes[name] = parsedValue
         }
       }
@@ -157,6 +166,16 @@ export function createSystem<
   }
 
   return { collectStyles, createVariant, theme }
+}
+
+/** Create a Design System token. */
+export function createToken(...path: string[]) {
+  return `--${kebabCase(path.join('-'))}`
+}
+
+/** Access a Design System token. */
+export function accessToken(...path: string[]) {
+  return `var(--${kebabCase(path.join('-'))})`
 }
 
 export type CreateVariantReturnType = ReturnType<

@@ -8,7 +8,7 @@ const GlobalStyles = createGlobalStyle<{ styles: any }>((props) => props.styles)
 
 export default function App({ Component, pageProps }) {
   const variantStyles = useMemo(() => collectStyles(), [])
-  console.log(variantStyles)
+
   return (
     <>
       <GlobalStyles styles={variantStyles} />

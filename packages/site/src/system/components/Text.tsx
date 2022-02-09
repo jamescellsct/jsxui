@@ -4,6 +4,10 @@ import styled from 'styled-components'
 import type { Color } from '../system'
 import { createVariant, collectStyles, theme } from '../system'
 
+// Notes:
+// createVariant is a weird name since you might not need variants (Stack/Grid), maybe move back to createComponent?
+// transforms are a bit cryptic, maybe styles/attributes are better names? Do attributes benefit from transforms or just reserve for styles?
+
 export const textVariant = createVariant({
   states: ['descendant', 'hover'],
   transforms: {
@@ -15,6 +19,7 @@ export const textVariant = createVariant({
     }),
   },
   defaults: {
+    color: 'foreground',
     variant: 'body',
   },
   variants: {
@@ -25,7 +30,6 @@ export const textVariant = createVariant({
     body: {
       as: { initial: 'p', descendant: 'span' },
       fontSize: 16,
-      color: 'foreground',
     },
   },
 })
@@ -38,19 +42,17 @@ export const TextDescendantContext = createContext(false)
 
 export const Text = styled((props) => {
   const isDescendant = useContext(TextDescendantContext)
-  const { as: Element = 'span', ...variantProps } = textVariant.getProps(
-    props.variant,
-    {
+  const { as: Element = 'span', ...variantProps } = textVariant.getProps({
+    ...props,
+    states: {
       descendant: isDescendant,
       ...props.states,
-    }
-  ).attributes
+    },
+  }).attributes
 
   return (
     <TextDescendantContext.Provider value={true}>
-      <Element {...variantProps} {...props} />
+      <Element {...variantProps} />
     </TextDescendantContext.Provider>
   )
-})<TextStyleProps>(
-  (props) => textVariant.getProps(props.variant, props.states).styles
-)
+})<TextStyleProps>({ margin: 0 }, (props) => textVariant.getProps(props).styles)
