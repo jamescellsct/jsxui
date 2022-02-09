@@ -16,8 +16,15 @@ export function createSystem<
     Props,
     keyof Theme['mediaQueries'] | StateKeys
   >
-  /** Searches theme to determine if value is an aliased token. */
-  const getThemeContext = (value) => {
+  const { mediaQueries, ...tokenSets } = theme
+  const contextStyles = Object.fromEntries(
+    ['initial']
+      .concat(Object.keys(mediaQueries))
+      .map((queryName) => [queryName, {}])
+  )
+
+  /** Search theme to determine if value is an aliased token. */
+  function getThemeContext(value) {
     let aliasContext = null
 
     Object.entries(theme).forEach(([context, tokens]) => {
@@ -28,14 +35,6 @@ export function createSystem<
 
     return aliasContext
   }
-
-  const { mediaQueries, ...tokenSets } = theme
-  const allVariants = new Map()
-  const contextStyles = Object.fromEntries(
-    ['initial']
-      .concat(Object.keys(mediaQueries))
-      .map((queryName) => [queryName, {}])
-  )
 
   function collectStyles() {
     // Collect media query styles
@@ -72,12 +71,12 @@ export function createSystem<
     Variant extends ComplexProps<{ as: string }, StateKeys> &
       MediaQueryAndStateProps<Partial<Props>, StateKeys>
   >(config: {
+    transforms: Transforms
+    states?: Array<StateKeys>
     defaults?: MediaQueryAndStateProps<Partial<Props>, StateKeys> & {
       variant?: NoInfer<VariantKeys>
     }
-    states?: Array<StateKeys>
-    transforms: Transforms
-    variants: Record<VariantKeys, Variant>
+    variants?: Record<VariantKeys, Variant>
   }) {
     const { defaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaultProps } = defaults || {}
@@ -93,19 +92,9 @@ export function createSystem<
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
       // TODO: add merge function that handles media query and state props
       const props = { ...defaultProps, ...variantProps, ...instanceProps }
-
       const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
-      const activeStateKeys = Object.entries(states || {})
-        .filter(([, value]) => value)
-        .map(([key]) => key)
-      const lastActiveStateKey =
-        activeStateKeys[activeStateKeys.length - 1] ?? 'initial'
       const attributes: Record<string, unknown> = {}
       const styles: Record<string, unknown> = {}
-
-      // const styles: Partial<Record<keyof Props, any>> = {}
-      // const attributes: Record<string, unknown> = {}
-      // const styles: Partial<Pick<typeof props, keyof Transforms>> = {}
 
       // TODO: can we support CSS states through transforms?
       // If returning states they are always applied or the user can control this somehow?
@@ -120,11 +109,11 @@ export function createSystem<
           if (context && typeof value === 'string') {
             parsedValue = accessToken(context, value)
           } else if (typeof value === 'object') {
-            const propertyName = createToken(name, variant)
+            const token = createToken(name, variant)
 
             // TODO: add support for states
             Object.entries(value).forEach(([stateKey, value]) => {
-              contextStyles[stateKey][propertyName] = value
+              contextStyles[stateKey][token] = value
             })
 
             parsedValue = accessToken(name, variant)
@@ -137,9 +126,16 @@ export function createSystem<
           let parsedValue = value
 
           if (typeof value === 'object') {
-            if (lastActiveStateKey) {
-              parsedValue = value[lastActiveStateKey]
-            }
+            parsedValue = value['initial']
+
+            Object.entries(states || {}).forEach(([stateKey, active]) => {
+              if (active) {
+                const stateValue = value[stateKey]
+                if (stateValue) {
+                  parsedValue = stateValue
+                }
+              }
+            })
           }
 
           // TODO: How to handle media query attribute props, event emitter on query change?
@@ -152,12 +148,6 @@ export function createSystem<
         styles,
       }
     }
-
-    // Store variant for access in collectStyles
-    allVariants.set(config, {
-      variants,
-      getProps,
-    })
 
     return {
       variants,
