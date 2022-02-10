@@ -3,6 +3,10 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { createVariant } from 'system'
 
+// props = createStateProps
+// const boxStates = createStateProps()
+// const { color } = boxStates.getProps({ color: { initial: '#000', dark: '#fff' } })
+
 const boxVariant = createVariant({
   states: ['activated', 'hovered', 'pressed'],
   transforms: {},
@@ -15,9 +19,10 @@ function Box(props) {
   const [activated, activate] = useState(false)
   const [hovered, hover] = useState(false)
   const [pressed, press] = useState(false)
-  const { color, ...meshProps } = boxVariant.getProps({
-    ...props,
-    states: { activated, hovered, pressed }, // TODO: accept "states" as second argument for convenience
+  const { color, ...meshProps } = boxVariant.getProps(props, {
+    activated,
+    hovered,
+    pressed,
   }).attributes
 
   //   console.log({ color, ...meshProps })

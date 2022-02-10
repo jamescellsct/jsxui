@@ -384,3 +384,79 @@ function App() {
   )
 }
 ```
+
+## Future Ideas
+
+### Composable Systems
+
+Composable systems allow a whole system to be easily and deterministically overridden.
+
+```tsx
+import { createSystem } from '@jsxui/system'
+
+const system = createSystem({
+  mediaQueries: {
+    small: '@media (min-width: 640px)',
+    medium: '@media (min-width: 1024px)',
+    large: '@media (min-width: 1440px)',
+  },
+  colors: {
+    background: '#fff',
+    foreground: '#000',
+  },
+})
+
+const alternateSystem = createSystem(system, {
+  colors: {
+    background: '#000',
+    foreground: '#fff',
+  },
+})
+
+const textVariant = alternateSystem.createVariant({
+  transforms: {
+    color: (size: keyof typeof alternateSystem.theme.colors) => {
+      return alternateSystem.theme.colors[size]
+    },
+  },
+  defaults: {
+    variant: 'body',
+  },
+  variants: {
+    body: {
+      color: 'foreground',
+    },
+  },
+})
+
+const Text = styled.span(textVariant.getProps)
+
+function App() {
+  return <Text>Hello World</Text> // color: #fff
+}
+```
+
+### Composable Variants
+
+Composable variants allow variants to be easily and deterministically overridden.
+
+```tsx
+import { createVariant } from 'system'
+
+const textVariant = createVariant({
+  variants: {
+    heading1: {
+      fontSize: { initial: '2rem', medium: '3rem', large: '4rem' },
+    },
+  },
+})
+
+// Only override the font size at the largest breakpoint
+const alternateTextVariant = createVariant(textVariant, {
+  variants: {
+    heading1: {
+      fontSize: { large: '6rem' },
+    },
+  },
+})
+```

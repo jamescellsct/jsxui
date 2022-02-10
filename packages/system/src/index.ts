@@ -81,14 +81,15 @@ export function createSystem<
     const { defaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaultProps } = defaults || {}
 
-    function getProps({
-      variant,
-      states,
-      ...instanceProps
-    }: Record<string, unknown> & {
-      variant?: VariantKeys
+    function getProps(
+      {
+        variant,
+        ...instanceProps
+      }: Record<string, unknown> & {
+        variant?: VariantKeys
+      } = {},
       states?: Partial<Record<StateKeys, boolean>>
-    } = {}) {
+    ) {
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
       // TODO: add merge function that handles media query and state props
       const props = { ...defaultProps, ...variantProps, ...instanceProps }
