@@ -10,7 +10,7 @@ export type MediaQueries = Record<string, unknown>
 
 export type NoInfer<T> = T extends infer S ? S : never
 
-export type Transform = (value: unknown) => Record<string, unknown>
+export type Transform = (value: any) => unknown
 
 export type TransformValue<T extends Transform> = Parameters<T>[0]
 

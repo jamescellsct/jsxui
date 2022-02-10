@@ -19,15 +19,15 @@ function Box(props) {
   const [activated, activate] = useState(false)
   const [hovered, hover] = useState(false)
   const [pressed, press] = useState(false)
-  const { color, ...meshProps } = boxVariant.getProps(props, {
+  const { color, ...meshProps } = boxVariant.getStateProps(props, {
     activated,
     hovered,
     pressed,
-  }).attributes
+  })
 
   //   console.log({ color, ...meshProps })
 
-  useFrame(() => (ref.current.rotation.x += 0.01))
+  // useFrame(() => (ref.current.rotation.x += 0.01))
 
   return (
     <mesh

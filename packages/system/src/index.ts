@@ -12,10 +12,6 @@ import type {
 export function createSystem<
   Theme extends Record<string, unknown> & Record<'mediaQueries', MediaQueries>
 >(theme: Theme) {
-  type MediaQueryAndStateProps<Props, StateKeys extends string> = ComplexProps<
-    Props,
-    keyof Theme['mediaQueries'] | StateKeys
-  >
   const { mediaQueries, ...tokenSets } = theme
   const contextStyles = Object.fromEntries(
     ['initial']
@@ -65,94 +61,103 @@ export function createSystem<
 
   function createVariant<
     Transforms extends Record<string, Transform>,
-    Props extends TransformValues<Transforms>,
     StateKeys extends string,
-    VariantKeys extends string,
-    Variant extends ComplexProps<{ as: string }, StateKeys> &
-      MediaQueryAndStateProps<Partial<Props>, StateKeys>
+    VariantKeys extends string
   >(config: {
     transforms: Transforms
     states?: Array<StateKeys>
-    defaults?: MediaQueryAndStateProps<Partial<Props>, StateKeys> & {
+    defaults?: Partial<TransformValues<Transforms>> & {
       variant?: NoInfer<VariantKeys>
     }
-    variants?: Record<VariantKeys, Variant>
+    variants?: Record<
+      VariantKeys,
+      ComplexProps<
+        Partial<TransformValues<Transforms>>,
+        keyof Theme['mediaQueries'] | StateKeys
+      >
+    >
   }) {
     const { defaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaultProps } = defaults || {}
+    const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
 
-    function getProps(
+    function getStateProps(
       {
         variant,
+        states: instanceStates,
         ...instanceProps
       }: Record<string, unknown> & {
+        states?: Partial<Record<StateKeys, boolean>>
         variant?: VariantKeys
       } = {},
-      states?: Partial<Record<StateKeys, boolean>>
+      localStates?: Partial<Record<StateKeys, boolean>>
     ) {
+      const variantProps = variants[variant || (defaultVariant as VariantKeys)]
+      const props = { ...defaultProps, ...variantProps, ...instanceProps }
+      const states = { ...localStates, ...instanceStates }
+
+      for (const name in props) {
+        const value = props[name]
+        let parsedValue = value
+
+        if (typeof value === 'object') {
+          parsedValue = value['initial']
+
+          Object.entries(states || {}).forEach(([stateKey, active]) => {
+            if (active) {
+              const stateValue = value[stateKey]
+              if (stateValue) {
+                parsedValue = stateValue
+              }
+            }
+          })
+        }
+
+        props[name] = parsedValue
+      }
+
+      return props
+    }
+
+    function getStyleProps({
+      variant,
+      ...instanceProps
+    }: Record<string, unknown> & {
+      variant?: VariantKeys
+    } = {}) {
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
       // TODO: add merge function that handles media query and state props
       const props = { ...defaultProps, ...variantProps, ...instanceProps }
-      const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
-      const attributes: Record<string, unknown> = {}
-      const styles: Record<string, unknown> = {}
 
-      // TODO: can we support CSS states through transforms?
-      // If returning states they are always applied or the user can control this somehow?
-      // (value: string) => ({ initial: ({ color: value }), hover: ({ '&:hover': { color: value } })
-      for (const name in props) {
-        const value = props[name]
+      transformKeys.forEach((key) => {
+        const value = props[key]
+        const context = getThemeContext(value)
+        let parsedValue
 
-        if (transformKeys.includes(name)) {
-          const context = getThemeContext(value)
-          let parsedValue
+        if (context && typeof value === 'string') {
+          parsedValue = accessToken(context, value)
+        } else if (typeof value === 'object') {
+          const token = createToken(key as string, variant)
 
-          if (context && typeof value === 'string') {
-            parsedValue = accessToken(context, value)
-          } else if (typeof value === 'object') {
-            const token = createToken(name, variant)
+          Object.entries(value).forEach(([stateKey, value]) => {
+            contextStyles[stateKey][token] = value
+          })
 
-            // TODO: add support for states
-            Object.entries(value).forEach(([stateKey, value]) => {
-              contextStyles[stateKey][token] = value
-            })
-
-            parsedValue = accessToken(name, variant)
-          } else {
-            parsedValue = value
-          }
-
-          styles[name] = parsedValue
+          parsedValue = accessToken(key as string, variant)
         } else {
-          let parsedValue = value
-
-          if (typeof value === 'object') {
-            parsedValue = value['initial']
-
-            Object.entries(states || {}).forEach(([stateKey, active]) => {
-              if (active) {
-                const stateValue = value[stateKey]
-                if (stateValue) {
-                  parsedValue = stateValue
-                }
-              }
-            })
-          }
-
-          // TODO: How to handle media query attribute props, event emitter on query change?
-          attributes[name] = parsedValue
+          parsedValue = value
         }
-      }
 
-      return {
-        attributes,
-        styles,
-      }
+        props[key] = parsedValue
+      })
+
+      return props
     }
 
     return {
+      getStateProps,
+      getStyleProps,
       variants,
-      getProps,
     }
   }
 
@@ -172,20 +177,6 @@ export function accessToken(...path: string[]) {
 export type CreateVariantReturnType = ReturnType<
   ReturnType<typeof createSystem>['createVariant']
 >
-
-export type VariantProps<T extends CreateVariantReturnType> = ReturnType<
-  T['getProps']
->
-
-export type StyleProps<T extends CreateVariantReturnType> =
-  VariantProps<T>['styles'] & {
-    variant?: keyof T['variants']
-  }
-
-export type AttributeProps<T extends CreateVariantReturnType> =
-  VariantProps<T>['attributes'] & {
-    variant?: keyof T['variants']
-  }
 
 export type {
   Transform,
