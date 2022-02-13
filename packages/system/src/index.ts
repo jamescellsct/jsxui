@@ -141,14 +141,9 @@ export function createSystem<
       transformKeys.forEach((key) => {
         const value = props[key]
         const transform = transforms[key]
-        const context = getThemeContext(value)
         let parsedValue
 
-        if (context && typeof value === 'string') {
-          parsedValue = {
-            [key]: accessToken(context, value),
-          }
-        } else if (typeof value === 'object') {
+        if (typeof value === 'object') {
           parsedValue = {}
 
           for (const stateKey in value) {
@@ -202,7 +197,27 @@ export function createSystem<
     }
   }
 
-  return { collectStyles, createVariant, theme }
+  const parsedTheme = Object.fromEntries(
+    Object.entries(theme).map(([context, tokens]) =>
+      context === 'mediaQueries'
+        ? [context, tokens]
+        : [
+            context,
+            Object.fromEntries(
+              Object.keys(tokens).map((token) => [
+                token,
+                accessToken(context, token),
+              ])
+            ),
+          ]
+    )
+  )
+
+  return {
+    collectStyles,
+    createVariant,
+    theme: parsedTheme,
+  }
 }
 
 /** Create a style token. */
