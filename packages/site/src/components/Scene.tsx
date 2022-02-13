@@ -3,15 +3,8 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import { createVariant } from 'system'
 
-// props = createStateProps
-// const boxStates = createStateProps()
-// const { color } = boxStates.getProps({ color: { initial: '#000', dark: '#fff' } })
-
 const boxVariant = createVariant({
   states: ['activated', 'hovered', 'pressed'],
-  transforms: {},
-  defaults: {},
-  variants: {},
 })
 
 function Box(props) {
@@ -25,9 +18,7 @@ function Box(props) {
     pressed,
   })
 
-  //   console.log({ color, ...meshProps })
-
-  // useFrame(() => (ref.current.rotation.x += 0.01))
+  useFrame(() => (ref.current.rotation.x += 0.01))
 
   return (
     <mesh
@@ -52,7 +43,7 @@ export default function App() {
       <pointLight position={[10, 10, 10]} />
       <Box
         color={{ initial: 'orange', hovered: 'hotpink' }}
-        scale={{ initial: 1, activated: 1.5 }}
+        scale={{ initial: 1, pressed: 1.5 }}
       />
       <OrbitControls />
     </Canvas>

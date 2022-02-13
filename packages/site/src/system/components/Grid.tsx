@@ -3,7 +3,6 @@ import styled, { CSSProp } from 'styled-components'
 import { Color, createVariant, theme } from '../system'
 
 const gridVariant = createVariant({
-  name: 'Grid',
   transforms: {
     width: (value: number | string) => value,
     minWidth: (value: number | string) => value,
@@ -17,7 +16,6 @@ const gridVariant = createVariant({
     margin: (value: string) => ({ '--grid-margin': value }),
     background: (value: Color) => theme.colors[value] || value,
   },
-  variants: {},
 })
 
 export type GridStyleProps = {
@@ -92,7 +90,7 @@ const StyledDebugColumn = styled.div<{ $index: number }>((props) => ({
   //   },
 }))
 
-function DebugGrid({ children, ...props }: GridProps) {
+function DebugGrid({ children, background: _background, ...props }: GridProps) {
   const [debugBaseline, setDebugBaseline] = React.useState(false)
   const [debugColumns, setDebugColumns] = React.useState(true)
 

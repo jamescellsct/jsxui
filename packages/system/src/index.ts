@@ -19,19 +19,6 @@ export function createSystem<
       .map((queryName) => [queryName, {}])
   )
 
-  /** Search theme to determine if value is an aliased token. */
-  function getThemeContext(value) {
-    let aliasContext = null
-
-    Object.entries(theme).forEach(([context, tokens]) => {
-      if (Object.keys(tokens).some((token) => token === value)) {
-        aliasContext = context
-      }
-    })
-
-    return aliasContext
-  }
-
   function collectStyles() {
     // Collect media query styles
     Object.entries(tokenSets).forEach(([tokenSetKey, tokens]) => {
@@ -64,13 +51,12 @@ export function createSystem<
     StateKeys extends string,
     VariantKeys extends string
   >(config: {
-    name?: string
-    transforms: Transforms
+    transforms?: Transforms
     states?: Array<StateKeys>
     defaults?: Partial<TransformValues<Transforms>> & {
       variant?: NoInfer<VariantKeys>
     }
-    variants: Record<
+    variants?: Record<
       VariantKeys,
       ComplexProps<
         Partial<TransformValues<Transforms>>,
@@ -80,7 +66,7 @@ export function createSystem<
   }) {
     type TransformedProps = Partial<{ [K in keyof Transforms]: any }>
 
-    const { name = '', defaults, transforms, variants } = config
+    const { defaults = {}, transforms = {}, variants = {} } = config
     const { variant: defaultVariant, ...defaultProps } = defaults || {}
     const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
 

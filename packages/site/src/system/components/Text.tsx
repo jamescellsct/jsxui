@@ -1,18 +1,8 @@
 import type { ReactHTML } from 'react'
 import React, { createContext, useContext } from 'react'
 import styled from 'styled-components'
-import type { Color } from '../system'
+import type { Color, FontSize } from '../system'
 import { createVariant, theme } from '../system'
-
-// createVariantSet
-// const asProp = createVariantProp({
-//   states: ['descendant'],
-//   variants: {
-//     heading1: 'h1',
-//     body: { initial: 'p', descendant: 'span' },
-//   },
-// })
-// asProp.getProps('heading1', { descendant: true })
 
 export const textAttributes = createVariant({
   transforms: { as: (value: keyof ReactHTML) => value },
@@ -25,16 +15,15 @@ export const textAttributes = createVariant({
 
 export const textStyles = createVariant({
   transforms: {
-    fontSize: (value: number) => value,
-    color: (value: Color) => theme.colors[value],
+    fontSize: (value: FontSize | number) => theme.fontSizes[value] || value,
+    color: (value: Color) => theme.colors[value] || value,
   },
   defaults: {
     color: 'foreground',
     variant: 'body',
   },
-  // Only variants will create global styles? Not indivual styles?
   variants: {
-    heading1: { fontSize: { initial: 40, medium: 60, large: 80 } },
+    heading1: { fontSize: 'heading1' },
     body: { fontSize: 24 },
   },
 })
@@ -63,7 +52,3 @@ function TextComponent(instanceProps: TextProps) {
 export const Text = styled(TextComponent)<any>({ margin: 0 }, (props) =>
   textStyles.getStyleProps(props)
 )
-
-const App = () => {
-  return <Text variant="heading1">Hello World</Text>
-}

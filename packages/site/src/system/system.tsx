@@ -9,7 +9,10 @@ export const { collectStyles, createVariant, theme } = createSystem({
   },
   colors: {
     foreground: { initial: '#000', dark: '#fff' },
-    background: { initial: '#fff', dark: '#000' },
+    background: {
+      initial: `linear-gradient(200deg, #8b57df 15.17%, #5d4387 87.41%) no-repeat`,
+      dark: '#000',
+    },
     primary: 'blue',
   },
   fontSizes: {
@@ -18,3 +21,5 @@ export const { collectStyles, createVariant, theme } = createSystem({
 })
 
 export type Color = keyof typeof theme.colors
+
+export type FontSize = keyof typeof theme.fontSizes
