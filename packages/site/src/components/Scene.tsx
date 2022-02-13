@@ -20,7 +20,7 @@ function Box(props) {
     pressed,
   })
 
-  useFrame(() => (ref.current.rotation.x += 0.01))
+  // useFrame(() => (ref.current.rotation.x += 0.01))
 
   return (
     <mesh
