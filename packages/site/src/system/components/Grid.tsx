@@ -16,6 +16,7 @@ const gridVariant = createVariant({
     margin: (value: string) => ({ '--grid-margin': value }),
     background: (value: Color) => theme.colors[value] || value,
   },
+  variants: {},
 })
 
 export type GridStyleProps = {

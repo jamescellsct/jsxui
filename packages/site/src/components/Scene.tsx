@@ -5,6 +5,8 @@ import { createVariant } from 'system'
 
 const boxVariant = createVariant({
   states: ['activated', 'hovered', 'pressed'],
+  transforms: {},
+  variants: {},
 })
 
 function Box(props) {

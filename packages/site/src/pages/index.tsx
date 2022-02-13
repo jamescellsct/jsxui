@@ -14,8 +14,10 @@ export default function Index() {
       margin={{ small: 16, medium: 32, large: '1fr' }}
       background="background"
     >
-      <Text variant="heading1">Heading</Text>
-      <Text>Body</Text>
+      <Text variant="heading1">Your System. Any Platform.</Text>
+      <Text>
+        Connect your design system now and start shipping your next idea.
+      </Text>
       <Scene />
     </Grid>
   )

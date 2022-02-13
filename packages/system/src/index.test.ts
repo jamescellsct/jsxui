@@ -14,9 +14,10 @@ export const { collectStyles, createVariant, theme } = createSystem({
     background: { initial: '#fff', dark: '#000' },
   },
   fontSizes: {
-    small: { initial: '12px', small: '14px', medium: '16px', large: '18px' },
-    medium: { initial: '16px', small: '18px', medium: '20px', large: '22px' },
-    large: { initial: '20px', small: '22px', medium: '24px', large: '26px' },
+    small: { initial: '14px', medium: '16px', large: '18px' },
+    medium: { initial: '16px', medium: '20px', large: '24px' },
+    large: { initial: '20px', medium: '24px', large: '32px' },
+    xlarge: { initial: '32px', medium: '40px', large: '60px' },
   },
 })
 
@@ -28,6 +29,7 @@ export const textAttributes = createVariant({
   states: ['descendant'],
   variants: {
     heading1: { as: 'h1' },
+    heading2: { as: 'h2' },
     body: { as: { initial: 'p', descendant: 'span' } },
     link: { as: 'a' },
   },
@@ -43,7 +45,8 @@ export const textStyles = createVariant({
     variant: 'body',
   },
   variants: {
-    heading1: { fontSize: 'large' },
+    heading1: { fontSize: 'xlarge' },
+    heading2: { fontSize: 'large' },
     body: { fontSize: 24 },
     link: { color: { hover: 'foregroundInteractive' } },
   },

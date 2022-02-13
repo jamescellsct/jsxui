@@ -16,7 +16,10 @@ export const { collectStyles, createVariant, theme } = createSystem({
     primary: 'blue',
   },
   fontSizes: {
-    heading1: { initial: 40, medium: 60, large: 80 },
+    small: { initial: '14px', medium: '16px', large: '18px' },
+    medium: { initial: '16px', medium: '20px', large: '24px' },
+    large: { initial: '20px', medium: '24px', large: '32px' },
+    xlarge: { initial: '40px', medium: '60px', large: '80px' },
   },
 })
 

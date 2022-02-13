@@ -8,20 +8,18 @@ Object {
     "--colors-foreground-interactive": "blue",
     "--font-sizes-large": "20px",
     "--font-sizes-medium": "16px",
-    "--font-sizes-small": "12px",
+    "--font-sizes-small": "14px",
+    "--font-sizes-xlarge": "32px",
   },
   "@media (min-width: 0px)": Object {
-    ":root": Object {
-      "--font-sizes-large": "22px",
-      "--font-sizes-medium": "18px",
-      "--font-sizes-small": "14px",
-    },
+    ":root": Object {},
   },
   "@media (min-width: 1280px)": Object {
     ":root": Object {
-      "--font-sizes-large": "26px",
-      "--font-sizes-medium": "22px",
+      "--font-sizes-large": "32px",
+      "--font-sizes-medium": "24px",
       "--font-sizes-small": "18px",
+      "--font-sizes-xlarge": "60px",
     },
   },
   "@media (min-width: 720px)": Object {
@@ -29,6 +27,7 @@ Object {
       "--font-sizes-large": "24px",
       "--font-sizes-medium": "20px",
       "--font-sizes-small": "16px",
+      "--font-sizes-xlarge": "40px",
     },
   },
   "@media (prefers-color-scheme: dark)": Object {
@@ -43,6 +42,6 @@ Object {
 exports[`collecting single variant styles 1`] = `
 Object {
   "color": "var(--colors-foreground)",
-  "fontSize": "var(--font-sizes-large)",
+  "fontSize": "var(--font-sizes-xlarge)",
 }
 `;
