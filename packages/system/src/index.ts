@@ -64,12 +64,13 @@ export function createSystem<
     StateKeys extends string,
     VariantKeys extends string
   >(config: {
+    name?: string
     transforms: Transforms
     states?: Array<StateKeys>
     defaults?: Partial<TransformValues<Transforms>> & {
       variant?: NoInfer<VariantKeys>
     }
-    variants?: Record<
+    variants: Record<
       VariantKeys,
       ComplexProps<
         Partial<TransformValues<Transforms>>,
@@ -77,7 +78,9 @@ export function createSystem<
       >
     >
   }) {
-    const { defaults, transforms, variants } = config
+    type TransformedProps = Partial<{ [K in keyof Transforms]: any }>
+
+    const { name = '', defaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaultProps } = defaults || {}
     const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
 
@@ -96,27 +99,32 @@ export function createSystem<
       const props = { ...defaultProps, ...variantProps, ...instanceProps }
       const states = { ...localStates, ...instanceStates }
 
-      for (const name in props) {
-        const value = props[name]
-        let parsedValue = value
+      return Object.fromEntries(
+        Object.entries(props).map(([key, value]) => {
+          let parsedValue = value
 
-        if (typeof value === 'object') {
-          parsedValue = value['initial']
+          if (
+            typeof value === 'object' &&
+            Object.keys(value).some(
+              (stateKey) => stateKey in transforms || stateKey in states
+            )
+          ) {
+            parsedValue = value['initial']
 
-          Object.entries(states || {}).forEach(([stateKey, active]) => {
-            if (active) {
-              const stateValue = value[stateKey]
-              if (stateValue) {
-                parsedValue = stateValue
+            Object.entries(states).forEach(([stateKey, active]) => {
+              if (active) {
+                const stateValue = value[stateKey]
+
+                if (stateValue) {
+                  parsedValue = stateValue
+                }
               }
-            }
-          })
-        }
+            })
+          }
 
-        props[name] = parsedValue
-      }
-
-      return props
+          return [key, parsedValue]
+        })
+      )
     }
 
     function getStyleProps({
@@ -128,30 +136,63 @@ export function createSystem<
       const variantProps = variants[variant || (defaultVariant as VariantKeys)]
       // TODO: add merge function that handles media query and state props
       const props = { ...defaultProps, ...variantProps, ...instanceProps }
+      let styleProps: TransformedProps = {}
 
       transformKeys.forEach((key) => {
         const value = props[key]
+        const transform = transforms[key]
         const context = getThemeContext(value)
         let parsedValue
 
         if (context && typeof value === 'string') {
-          parsedValue = accessToken(context, value)
+          parsedValue = {
+            [key]: accessToken(context, value),
+          }
         } else if (typeof value === 'object') {
-          const token = createToken(key as string, variant)
+          parsedValue = {}
 
-          Object.entries(value).forEach(([stateKey, value]) => {
-            contextStyles[stateKey][token] = value
-          })
+          for (const stateKey in value) {
+            const stateValue = value[stateKey]
+            const transformedValue = transform(stateValue)
 
-          parsedValue = accessToken(key as string, variant)
+            if (stateKey === 'initial') {
+              if (typeof transformedValue === 'object') {
+                parsedValue = { ...parsedValue, ...transformedValue }
+              } else {
+                parsedValue = { ...parsedValue, [key]: transformedValue }
+              }
+            } else {
+              parsedValue[`@media ${mediaQueries[stateKey]}`] =
+                typeof transformedValue === 'object'
+                  ? {
+                      ...parsedValue,
+                      ...transformedValue,
+                    }
+                  : {
+                      ...parsedValue,
+                      [key]: transformedValue,
+                    }
+            }
+          }
         } else {
-          parsedValue = value
+          const transformedValue = transform(value)
+
+          if (typeof transformedValue === 'object') {
+            parsedValue = transformedValue
+          } else {
+            parsedValue = {
+              [key]: transformedValue,
+            }
+          }
         }
 
-        props[key] = parsedValue
+        styleProps = {
+          ...styleProps,
+          ...parsedValue,
+        }
       })
 
-      return props
+      return styleProps
     }
 
     return {
@@ -164,12 +205,12 @@ export function createSystem<
   return { collectStyles, createVariant, theme }
 }
 
-/** Create a Design System token. */
+/** Create a style token. */
 export function createToken(...path: string[]) {
   return `--${kebabCase(path.join('-'))}`
 }
 
-/** Access a Design System token. */
+/** Access a style token. */
 export function accessToken(...path: string[]) {
   return `var(--${kebabCase(path.join('-'))})`
 }

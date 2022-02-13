@@ -17,3 +17,13 @@ export type TransformValue<T extends Transform> = Parameters<T>[0]
 export type TransformValues<T extends Record<string, Transform>> = {
   [K in keyof T]: TransformValue<T[K]>
 }
+
+// type AssignOptionality<T extends Record<string, [boolean, any]>> = {
+//   [K in keyof T as T[K][0] extends true ? K : never]?: T[K][1]
+// } &
+//   { [K in keyof T as T[K][0] extends false ? K : never]: T[K][1] }
+
+// type WrapWithInfo<T> = [undefined extends T ? true : false, T]
+
+// export type TransformValues<T extends Record<string, Transform>> =
+//   AssignOptionality<{ [K in keyof T]: WrapWithInfo<TransformValue<T[K]>> }>

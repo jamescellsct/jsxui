@@ -12,6 +12,9 @@ export const { collectStyles, createVariant, theme } = createSystem({
     background: { initial: '#fff', dark: '#000' },
     primary: 'blue',
   },
+  fontSizes: {
+    heading1: { initial: 40, medium: 60, large: 80 },
+  },
 })
 
 export type Color = keyof typeof theme.colors
