@@ -1,6 +1,7 @@
+import type { ReactHTML } from 'react'
 import { createSystem } from './index'
 
-const { collectStyles, createVariant, theme } = createSystem({
+export const { collectStyles, createVariant, theme } = createSystem({
   mediaQueries: {
     small: '(min-width: 0px)',
     medium: '(min-width: 720px)',
@@ -12,36 +13,39 @@ const { collectStyles, createVariant, theme } = createSystem({
     foregroundInteractive: 'blue',
     background: { initial: '#fff', dark: '#000' },
   },
+  fontSizes: {
+    small: { initial: '12px', small: '14px', medium: '16px', large: '18px' },
+    medium: { initial: '16px', small: '18px', medium: '20px', large: '22px' },
+    large: { initial: '20px', small: '22px', medium: '24px', large: '26px' },
+  },
 })
 
-type ColorValue = keyof typeof theme.colors
+type Color = keyof typeof theme.colors
+type FontSize = keyof typeof theme.fontSizes
 
-const textVariant = createVariant({
-  states: ['descendant', 'hover'],
+export const textAttributes = createVariant({
+  transforms: { as: (value: keyof ReactHTML) => value },
+  states: ['descendant'],
+  variants: {
+    heading1: { as: 'h1' },
+    body: { as: { initial: 'p', descendant: 'span' } },
+    link: { as: 'a' },
+  },
+})
+
+export const textStyles = createVariant({
   transforms: {
-    fontSize: (value: number) => ({
-      fontSize: value,
-    }),
-    color: (value: ColorValue) => ({
-      color: theme.colors[value],
-    }),
+    fontSize: (value: FontSize | number) => theme.fontSizes[value] || value,
+    color: (value: Color) => theme.colors[value] || value,
   },
   defaults: {
     color: 'foreground',
+    variant: 'body',
   },
   variants: {
-    heading1: {
-      as: 'h1',
-      fontSize: { initial: 40, medium: 48, large: 60 },
-    },
-    body: {
-      as: { initial: 'p', descendant: 'span' },
-      fontSize: 16,
-    },
-    link: {
-      as: 'a',
-      color: { hover: 'foregroundInteractive' },
-    },
+    heading1: { fontSize: 'large' },
+    body: { fontSize: 24 },
+    link: { color: { hover: 'foregroundInteractive' } },
   },
 })
 
@@ -50,20 +54,23 @@ test('collecting all variant styles', () => {
 })
 
 test('collecting single variant styles', () => {
-  expect(textVariant.getProps({ variant: 'heading1' })).toMatchSnapshot()
+  expect(textStyles.getStyleProps({ variant: 'heading1' })).toMatchSnapshot()
 })
 
 test('variant attribute states', () => {
-  const props = textVariant.getProps({ variant: 'body' }, { descendant: true })
-  expect(props.attributes.as).toEqual('span')
+  const props = textAttributes.getStateProps(
+    { variant: 'body' },
+    { descendant: true }
+  )
+  expect(props.as).toEqual('span')
 })
 
 test('variant style alias', () => {
-  const props = textVariant.getProps({ variant: 'body' })
-  expect(props.styles.color).toEqual('var(--colors-foreground)')
+  const props = textStyles.getStyleProps({ variant: 'body' })
+  expect(props.color).toEqual('var(--colors-foreground)')
 })
 
-test('variant style states', () => {
-  const props = textVariant.getProps({ variant: 'body' }, { hover: true })
-  expect(props.styles.color).toEqual('foregroundInteractive')
-})
+// test('variant style states', () => {
+//   const props = textStyles.getStyleProps({ variant: 'body' }, { hover: true })
+//   expect(props.styles.color).toEqual('foregroundInteractive')
+// })

@@ -66,7 +66,7 @@ export function createSystem<
   }) {
     type TransformedProps = Partial<{ [K in keyof Transforms]: any }>
 
-    const { defaults = {}, transforms = {}, variants = {} } = config
+    const { defaults, transforms, variants } = config
     const { variant: defaultVariant, ...defaultProps } = defaults || {}
     const transformKeys = Object.keys(transforms) as Array<keyof Transforms>
 
@@ -197,7 +197,11 @@ export function createSystem<
             ),
           ]
     )
-  )
+  ) as {
+    [K in keyof Theme]: {
+      [K2 in keyof Theme[K]]: string
+    }
+  }
 
   return {
     collectStyles,
