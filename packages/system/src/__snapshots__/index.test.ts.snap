@@ -45,3 +45,29 @@ Object {
   "fontSize": "var(--font-sizes-xlarge)",
 }
 `;
+
+exports[`media query prop styles 1`] = `
+Object {
+  "--grid-columns": "repeat(6, minmax(0, 1fr))",
+  "@media (min-width: 0px)": Object {
+    "--grid-margin": 16,
+  },
+  "@media (min-width: 1280px)": Object {
+    "--grid-columns": "repeat(12, 100px)",
+    "--grid-margin": "1fr",
+  },
+  "@media (min-width: 720px)": Object {
+    "--grid-columns": "repeat(12, minmax(0, 1fr))",
+    "--grid-margin": 32,
+    "width": "100%",
+  },
+  "background": "var(--colors-background)",
+  "gridColumn": undefined,
+  "gridRow": undefined,
+  "height": undefined,
+  "maxHeight": undefined,
+  "maxWidth": undefined,
+  "minHeight": undefined,
+  "minWidth": undefined,
+}
+`;

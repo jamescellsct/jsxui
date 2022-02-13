@@ -143,14 +143,17 @@ export function createSystem<
                 parsedValue = { ...parsedValue, [key]: transformedValue }
               }
             } else {
-              parsedValue[`@media ${mediaQueries[stateKey]}`] =
+              const mediaQuery = `@media ${mediaQueries[stateKey]}`
+              const previousMediaQueryStyles = styleProps[mediaQuery] || {}
+
+              parsedValue[mediaQuery] =
                 typeof transformedValue === 'object'
                   ? {
-                      ...parsedValue,
+                      ...previousMediaQueryStyles,
                       ...transformedValue,
                     }
                   : {
-                      ...parsedValue,
+                      ...previousMediaQueryStyles,
                       [key]: transformedValue,
                     }
             }

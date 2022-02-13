@@ -52,6 +52,23 @@ export const textStyles = createVariant({
   },
 })
 
+const gridStyles = createVariant({
+  transforms: {
+    width: (value: number | string) => value,
+    minWidth: (value: number | string) => value,
+    maxWidth: (value: number | string) => value,
+    height: (value: number | string) => value,
+    minHeight: (value: number | string) => value,
+    maxHeight: (value: number | string) => value,
+    column: (value: number | string) => ({ gridColumn: value }),
+    row: (value: number | string) => ({ gridRow: value }),
+    columns: (value: string) => ({ '--grid-columns': value }),
+    margin: (value: string) => ({ '--grid-margin': value }),
+    background: (value: Color) => theme.colors[value] || value,
+  },
+  variants: {}, // TODO: variants shouldn't be required, but is giving type trouble when adding a default empty object
+})
+
 test('collecting all variant styles', () => {
   expect(collectStyles()).toMatchSnapshot()
 })
@@ -71,6 +88,26 @@ test('variant attribute states', () => {
 test('variant style alias', () => {
   const props = textStyles.getStyleProps({ variant: 'body' })
   expect(props.color).toEqual('var(--colors-foreground)')
+})
+
+test('media query prop styles', () => {
+  const props = gridStyles.getStyleProps({
+    width: {
+      medium: '100%',
+    },
+    columns: {
+      initial: 'repeat(6, minmax(0, 1fr))',
+      medium: 'repeat(12, minmax(0, 1fr))',
+      large: 'repeat(12, 100px)',
+    },
+    margin: {
+      small: 16,
+      medium: 32,
+      large: '1fr',
+    },
+    background: 'background',
+  })
+  expect(props).toMatchSnapshot()
 })
 
 // test('variant style states', () => {

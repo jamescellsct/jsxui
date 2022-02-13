@@ -17,6 +17,13 @@ export const textAttributes = createVariant({
 
 export const textStyles = createVariant({
   transforms: {
+    align: (value: 'start' | 'center' | 'end') => ({
+      textAlign: {
+        start: 'left',
+        center: 'center',
+        end: 'right',
+      }[value],
+    }),
     fontSize: (value: FontSize | number) => theme.fontSizes[value] || value,
     color: (value: Color) => theme.colors[value] || value,
   },
